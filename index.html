@@ -30,6 +30,7 @@
 				<div id="observablehq-viewof-SelectedTimeId-c88a7b72"></div>
 				<div id="observablehq-statsCardChart-c88a7b72"></div>
 				<div id="observablehq-comparisonChart-c88a7b72"></div>
+				<div id="observablehq-violinsChart-c88a7b72"></div>
 				<div id="observablehq-viewof-attribsImpact-c88a7b72"></div>
 			</div>
 			<!-- /.col-8 -->
@@ -107,6 +108,12 @@
 					return new Inspector(
 						document.querySelector(
 							"#observablehq-comparisonChart-c88a7b72"
+						)
+					);
+				if (name === "violinsChart")
+					return new Inspector(
+						document.querySelector(
+							"#observablehq-violinsChart-c88a7b72"
 						)
 					);
 				if (name === "viewof attribsImpact")
