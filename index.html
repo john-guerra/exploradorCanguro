@@ -11,30 +11,46 @@
 			integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
 			crossorigin="anonymous"
 		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Roboto:wght@300&display=swap"
+			rel="stylesheet"
+		/>
+
+		<style>
+			h1, h2, h3, h4 {
+				font-family: 'Oswald', sans-serif;
+				font-weight: bolder;
+
+			}
+			div {
+				font-family: 'Roboto', sans-serif;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="container">
 			<div class="row">
-			<h1>Explorador Canguro</h1>
-			<div class="col-4">
-				<div id="observablehq-viewof-attribWidth-c88a7b72"></div>
-				<div id="observablehq-viewof-height-c88a7b72"></div>
-				<div id="observablehq-viewof-attribs-c88a7b72"></div>
-				<div id="observablehq-viewof-nameG1-c88a7b72"></div>
-				<div id="observablehq-viewof-G1-c88a7b72"></div>
-				<div id="observablehq-viewof-nameG2-c88a7b72"></div>
-				<div id="observablehq-viewof-G2-c88a7b72"></div>
-			</div>
-			<!-- /.col-4 -->
-			<div class="col-8">
-				<div id="observablehq-viewof-SelectedTimeId-c88a7b72"></div>
-				<div id="observablehq-statsCardChart-c88a7b72"></div>
-				<div id="observablehq-comparisonChart-c88a7b72"></div>
-				<div id="observablehq-violinsChart-c88a7b72"></div>
-				<div id="observablehq-viewof-attribsImpact-c88a7b72"></div>
-			</div>
-			<!-- /.col-8 -->
-
+				<h1>Explorador Canguro</h1>
+				<div class="col-4">
+					<div id="observablehq-viewof-attribWidth-c88a7b72"></div>
+					<div id="observablehq-viewof-height-c88a7b72"></div>
+					<div id="observablehq-viewof-attribs-c88a7b72"></div>
+					<div id="observablehq-viewof-nameG1-c88a7b72"></div>
+					<div id="observablehq-viewof-G1-c88a7b72"></div>
+					<div id="observablehq-viewof-nameG2-c88a7b72"></div>
+					<div id="observablehq-viewof-G2-c88a7b72"></div>
+				</div>
+				<!-- /.col-4 -->
+				<div class="col-8">
+					<div id="observablehq-viewof-SelectedTimeId-c88a7b72"></div>
+					<div id="observablehq-statsCardChart-c88a7b72"></div>
+					<div id="observablehq-comparisonChart-c88a7b72"></div>
+					<div id="observablehq-violinsChart-c88a7b72"></div>
+					<div id="observablehq-viewof-attribsImpact-c88a7b72"></div>
+				</div>
+				<!-- /.col-8 -->
 			</div>
 			<!-- /.row -->
 		</div>
@@ -48,7 +64,7 @@
 				Runtime,
 				Inspector,
 			} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
-			import define from "https://api.observablehq.com/@john-guerra/explorador-canguro@537.js?v=3";
+			import define from "https://api.observablehq.com/@john-guerra/explorador-canguro.js?v=3";
 			new Runtime().module(define, (name) => {
 				if (name === "viewof attribWidth")
 					return new Inspector(
