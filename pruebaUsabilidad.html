@@ -45,6 +45,7 @@
         </div>
         <!-- /.col-4 -->
         <div class="col-8" id="divChart">
+          <div id="observablehq-intro-85bb1ede"></div>
           <div id="observablehq-viewof-maxRecords-85bb1ede"></div>
           <div id="observablehq-viewof-selected-85bb1ede"></div>
         </div>
@@ -75,7 +76,13 @@
         if (name === "viewof hasDetailed")
           return new Inspector(
             document.querySelector("#observablehq-viewof-hasDetailed-85bb1ede")
-          );        
+          );
+
+        if (name === "intro")
+        return new Inspector(
+          document.querySelector("#observablehq-intro-85bb1ede")
+        );
+        
         if (name === "div")
           return new Inspector(
             document.querySelector("#observablehq-div-85bb1ede")
