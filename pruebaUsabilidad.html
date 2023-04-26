@@ -40,7 +40,7 @@
         <div class="col-4">
           <div id="observablehq-div-85bb1ede">Loading...</div>
           <div id="observablehq-divDetails-85bb1ede"></div>
-          <div style="display:none" id="observablehq-brushDetails-85bb1ede"></div>
+          <div style="display: none;" id="observablehq-brushDetails-85bb1ede"></div>
         </div>
         <!-- /.col-4 -->
         <div class="col-8" id="divChart">
@@ -79,10 +79,10 @@
           return new Inspector(
             document.querySelector("#observablehq-divDetails-85bb1ede")
           );
-        if (name === "brushDetails")
-          return new Inspector(
-            document.querySelector("#observablehq-brushDetails-85bb1ede")
-          );
+        // if (name === "brushDetails")
+        //   return new Inspector(
+        //     document.querySelector("#observablehq-brushDetails-85bb1ede")
+        //   );
         return ["dataF", "dataStages"].includes(name);
       });
 
