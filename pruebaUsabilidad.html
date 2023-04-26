@@ -39,6 +39,7 @@
 
         <div class="col-4">
           <div id="observablehq-div-85bb1ede">Loading...</div>
+          <div id="observablehq-viewof-hasDetailed-85bb1ede"></div>
           <div id="observablehq-divDetails-85bb1ede"></div>
           <div style="display: none;" id="observablehq-brushDetails-85bb1ede"></div>
         </div>
@@ -71,6 +72,10 @@
           return new Inspector(
             document.querySelector("#observablehq-viewof-maxRecords-85bb1ede")
           );
+        if (name === "viewof hasDetailed")
+          return new Inspector(
+            document.querySelector("#observablehq-viewof-hasDetailed-85bb1ede")
+          );        
         if (name === "div")
           return new Inspector(
             document.querySelector("#observablehq-div-85bb1ede")
