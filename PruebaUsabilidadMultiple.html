@@ -34,11 +34,13 @@
 <body>
 <div style="padding: 40px">
   <div class="row">
-    <h1>KMC Explorer <br /><small>Prueba de Usabilidad</small></h1>
+    <h1>KMC Explorer <br /></h1>
 
   <div class="col-4">
     <div style="border: black  solid 2px; padding: 10px">
       <h4><b>Initial Filter</b></h4>
+      <div id ="observablehq-viewof-maxTimelines"></div>
+      <hr>
       <div id="observablehq-viewof-attribs"></div>
       <hr>
       <div id="observablehq-viewof-G1"></div>
@@ -58,11 +60,11 @@
     <span>Please use your mouse to draw queries using TimeBoxes. Press R or Backspace to delete the selected TimeBox,
       or the arrows to displace it. You can also select multiple TimeBoxes using shift+click to move them as a block</span>
     </div>
-    <h2>Peso</h2>
+    <h2>Weight</h2>
     <div id="observablehq-viewof-tsPeso-67a7e2dd"></div>
-    <h2>Talla</h2>
+    <h2>Length</h2>
     <div id="observablehq-viewof-tsTalla-67a7e2dd"></div>
-    <h2>PC</h2>
+    <h2>Craneal Perimeter</h2>
     <div id="observablehq-viewof-tsPC-67a7e2dd"></div>
   </div>
   </div>
@@ -88,7 +90,9 @@
     if (name === "viewof tsPC") return new Inspector(document.querySelector("#observablehq-viewof-tsPC-67a7e2dd"));
     if (name === "viewof G1") return new Inspector(document.querySelector("#observablehq-viewof-G1"));
     if (name === "viewof attribs") return new Inspector(document.querySelector("#observablehq-viewof-attribs"));
-    return ["configImpact","SelectedTime"].includes(name);
+   if (name === "viewof maxTimelines") return new Inspector(document.querySelector("#observablehq-viewof-maxTimelines"));
+
+   return ["configImpact","SelectedTime"].includes(name);
   });
 
   notebook.redefine("width", document.querySelector("#divChart").offsetWidth - 300)
