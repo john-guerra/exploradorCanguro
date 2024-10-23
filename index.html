@@ -65,8 +65,8 @@
 				Runtime,
 				Inspector,
 			} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
-			import define from "https://api.observablehq.com/@john-guerra/explorador-canguro.js?v=3";
-			new Runtime().module(define, (name) => {
+			import define from "https://api.observablehq.com/@john-guerra/explorador-canguro.js@952?v=3";
+			const notebook = new Runtime().module(define, (name) => {
 				if (name === "viewof attribWidth")
 					return new Inspector(
 						document.querySelector(
@@ -144,9 +144,6 @@
 					"selectedStages",
 					"SelectedTime",
 					"configImpact",
-					"updateG1",
-					"updateG2",
-					"dataF"
 				].includes(name);
 			});
 		</script>
