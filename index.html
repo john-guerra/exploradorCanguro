@@ -56,12 +56,14 @@
           </div>
         </div>
         <!-- /.col-4 -->
-        <div class="col-8">
+        <div id="divChart" class="col-8">
           <div id="observablehq-viewof-SelectedTimeId-c88a7b72"></div>
           <div id="observablehq-statsCardChart-c88a7b72"></div>
           <div id="observablehq-comparisonChart-c88a7b72"></div>
           <div id="observablehq-violinsChart-c88a7b72"></div>
           <div id="observablehq-viewof-attribsImpact-c88a7b72"></div>
+          <div id="observablehq-viewof-attribWidth-c88a7b72"></div>
+          <div id="observablehq-viewof-height-c88a7b72"></div>
         </div>
         <!-- /.col-8 -->
       </div>
@@ -77,7 +79,7 @@
         Runtime,
         Inspector,
       } from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
-      import define from "https://api.observablehq.com/@john-guerra/explorador-canguro.js@952?v=3";
+      import define from "https://api.observablehq.com/@john-guerra/explorador-canguro@966.js?v=4";
       const notebook = new Runtime().module(define, (name) => {
         if (name === "viewof attribWidth")
           return new Inspector(
@@ -139,7 +141,7 @@
           "G1G2",
           "selectedStages",
           "SelectedTime",
-          "configImpact",          
+          "configImpact",
           "updateG1",
           "updateG2",
           "dataF",
