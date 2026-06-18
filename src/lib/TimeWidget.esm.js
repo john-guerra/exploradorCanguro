@@ -1,4 +1,4 @@
-// undefined v0.0.27 Copyright 2025 Iván Velasco González & John Alexis Guerra Gómez
+// undefined v0.0.27 Copyright 2026 Iván Velasco González & John Alexis Guerra Gómez
 import * as d3 from 'd3';
 
 (function() {
@@ -1074,10 +1074,10 @@ function isInsideDomain(domain, scaleX, scaleY) {
   let domainY = [domain[1][1], domain[0][1]];
 
   return (
-    domainX[0] > scaleXDomain[0] &&
-    domainX[1] < scaleXDomain[1] &&
-    domainY[0] > scaleYDomain[0] &&
-    domainY[1] < scaleYDomain[1]
+      domainX[0] >= scaleXDomain[0] &&
+      domainX[1] <= scaleXDomain[1] &&
+      domainY[0] >= scaleYDomain[0] &&
+      domainY[1] <= scaleYDomain[1]
   );
 }
 
@@ -1088,8 +1088,21 @@ const BrushModes = Object.freeze({
 
 const BrushAggregation = Object.freeze({
   And: "and",
-  Or: "OR",
+    Or: "or",
 });
+
+// Normalize a numeric [lo, hi] domain: order endpoints, widen a zero-width
+// interval by eps. Non-numeric domains (e.g. Dates) and malformed input pass
+// through unchanged so the scaleTime path is never broken.
+function normalizeDomain(domain, { eps = 1e-6 } = {}) {
+  if (!Array.isArray(domain) || domain.length !== 2) return domain;
+  let [lo, hi] = domain;
+  if (typeof lo !== "number" || typeof hi !== "number") return domain;
+  if (Number.isNaN(lo) || Number.isNaN(hi)) return domain;
+  if (lo > hi) [lo, hi] = [hi, lo];
+  if (lo === hi) hi = lo + eps;
+  return [lo, hi];
+}
 
 // import {log} from "./utils.js";
 
@@ -3071,7 +3084,7 @@ function brushInteraction({
   tSelectionCall = throttle(50, updateSelectedCoordinates);
 
   dataSelected = new Map();
-  dataNotSelected = [];
+  dataNotSelected = data;
   brushesGroup = new Map();
   brushCount = 0;
   brushSize = 0;
@@ -3704,6 +3717,22 @@ function brushInteraction({
     updateGroups();
   };
 
+  me.duplicateBrushGroup = function (sourceId = brushGroupSelected) {
+    const source = brushesGroup.get(sourceId);
+    if (!source) return;
+    const payload = cloneBrushGroupPayload(source);
+    if (payload.brushes.length === 0) {
+      me.addBrushGroup(); // nothing committed → behave like Add Group
+      return;
+    }
+    const before = new Set(brushesGroup.keys());
+    me.addFilters([payload], false); // appends a new group, materializes copied brushes
+    const newId = [...brushesGroup.keys()].find((k) => !before.has(k));
+    if (newId !== undefined) selectBrushGroup(newId);
+    updateStatus();
+    updateGroups();
+  };
+
   me.changeBrushGroupState = function (id, newState) {
     if (brushesGroup.get(id).isEnable === newState) return; //same state so no update needed
 
@@ -4035,6 +4064,29 @@ function brushInteraction({
   return me;
 }
 
+// Pure: build the payload that me.addFilters() consumes, from a brush group's
+// committed brushes (those with a non-null selection). No d3/DOM references.
+function cloneBrushGroupPayload(group, { suffix = " (copy)" } = {}) {
+  const brushes = [];
+  if (group && group.brushes) {
+    for (const brush of group.brushes.values()) {
+      if (brush.selection !== null && brush.selectionDomain) {
+        brushes.push({
+          mode: brush.mode,
+          aggregation: brush.aggregation,
+          selectionDomain: brush.selectionDomain,
+        });
+      }
+    }
+  }
+  return {
+    isEnable: true,
+    isActive: false,
+    name: ((group && group.name) || "Group") + suffix,
+    brushes,
+  };
+}
+
 function TimeWidget(
   data,
   {
@@ -4250,11 +4302,15 @@ function TimeWidget(
     <div id="brushesList">
     </div>
     <button id="btnAddBrushGroup">Add Group</button>
+    <button id="btnDuplicateBrushGroup">Duplicate Group</button>
     </div>`;
 
     groupsElement
       .querySelector("button#btnAddBrushGroup")
       .addEventListener("click", onAddBrushGroup);
+    groupsElement
+      .querySelector("button#btnDuplicateBrushGroup")
+      .addEventListener("click", onDuplicateBrushGroup);
 
     if (showBrushesControls) {
       d3.select(groupsElement).insert("h3", ":first-child").text("Groups:");
@@ -4268,6 +4324,10 @@ function TimeWidget(
 
   function onAddBrushGroup() {
     brushes.addBrushGroup();
+  }
+
+  function onDuplicateBrushGroup() {
+    brushes.duplicateBrushGroup();
   }
 
   function onChangeNonSelected(newState) {
@@ -4442,8 +4502,8 @@ function TimeWidget(
   }
 
   function initDomains({ xDataType, fData }) {
-    if (!xDomain) {
-      xDomain = fixAxis && _this ? _this.extent.x : d3.extent(fData, x); // Keep same axes as in the first rendering
+    if (!ts.xDomain) {
+      ts.xDomain = fixAxis && _this ? _this.extent.x : d3.extent(fData, x); // Keep same axes as in the first rendering
     }
 
     overviewX = xScale ? xScale.copy() : undefined;
@@ -4452,7 +4512,7 @@ function TimeWidget(
       // X is Date
       hasScaleTime = true;
       if (!overviewX) overviewX = d3.scaleTime();
-      overviewX.domain(xDomain);
+      overviewX.domain(ts.xDomain);
       if (!fmtX) {
         // It is a function of type d3.timeFormat. I don't like the way to check that it is a function of that type, but I don't know a better one.
         fmtX = d3.timeFormat("%Y-%m-%d");
@@ -4468,7 +4528,7 @@ function TimeWidget(
       // if (xDataType === "number") {
       // X is number
       if (!overviewX) overviewX = d3.scaleLinear();
-      overviewX.domain(xDomain);
+      overviewX.domain(ts.xDomain);
       if (!fmtX) {
         fmtX = d3.format(".1f");
       }
@@ -4488,6 +4548,11 @@ function TimeWidget(
       .range([height - ts.margin.top - ts.margin.bottom, 0])
       .nice()
       .clamp(true);
+
+    // Full data extent captured once, before any zoom narrows the domains.
+    if (!ts.fullExtent) {
+      ts.fullExtent = { x: d3.extent(fData, x), y: d3.extent(fData, y) };
+    }
   }
 
   function init() {
@@ -4803,8 +4868,7 @@ function TimeWidget(
       .attr("min", hasScaleTime ? fmtX(domainX[0]) : domainX[0])
       .attr("max", hasScaleTime ? fmtX(domainX[1]) : domainX[1])
       .attr("step", ts.stepX)
-      .attr("width", "50%")
-      // .style("background-color", ts.backgroundColor)
+        .style("width", "100%")
       .on("change", onSpinboxChange);
 
     let x1 = divInputX
@@ -4813,9 +4877,8 @@ function TimeWidget(
       .attr("type", hasScaleTime ? "Date" : "number")
       .attr("min", hasScaleTime ? fmtX(domainX[0]) : domainX[0])
       .attr("max", hasScaleTime ? fmtX(domainX[1]) : domainX[1])
-      .attr("width", "50%")
       .attr("step", ts.stepX)
-      // .style("background-color", ts.backgroundColor)
+        .style("width", "100%")
       .on("change", onSpinboxChange);
 
     let divY = selection.append("div");
@@ -4832,9 +4895,8 @@ function TimeWidget(
       .attr("type", "number")
       .attr("min", domainY[0])
       .attr("max", domainY[1])
-      .attr("width", "50%")
       .attr("step", ts.stepY)
-      // .style("background-color", ts.backgroundColor)
+        .style("width", "100%")
       .on("change", onSpinboxChange);
 
     let y1 = divInputY
@@ -4843,9 +4905,8 @@ function TimeWidget(
       .attr("type", "number")
       .attr("min", domainY[0])
       .attr("max", domainY[1])
-      .attr("width", "50%")
       .attr("step", ts.stepY)
-      // .style("background-color", ts.backgroundColor)
+        .style("width", "100%")
       .on("change", onSpinboxChange);
 
     brushSpinBoxes = [
@@ -4856,7 +4917,7 @@ function TimeWidget(
     if (showBrushesCoordinates) {
       selection
         .insert("h3", ":first-child")
-        .text("Current TimeBox Coordinates:");
+          .text("Coordinates:");
       divControls.appendChild(brushesCoordinatesElement);
     }
   }
@@ -5500,6 +5561,18 @@ function TimeWidget(
         init();
         brushes.addFilters(status, true);
     };
+
+  ts.setDomains = ({ x, y } = {}) => {
+    if (x) ts.xDomain = normalizeDomain(x);
+    if (y) ts.yDomain = normalizeDomain(y);
+    ts.update();
+    return ts;
+  };
+
+  ts.duplicateSelectedGroup = () => {
+    brushes.duplicateBrushGroup();
+    return ts;
+  };
 
   // Remove possible previous event listener
   //target.removeEventListener("TimeWidget", onTimeWidgetEvent);
