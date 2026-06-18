@@ -61,11 +61,11 @@ const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, or
 ```
 
 ```js
-const weeks  = view(weeksSlider);
+const weeks  = Generators.input(weeksSlider);
 ```
 
 ```js
-const weight = view(weightSlider);
+const weight = Generators.input(weightSlider);
 ```
 
 ```js
