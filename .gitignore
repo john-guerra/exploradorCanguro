@@ -103,11 +103,11 @@ dist
 # TernJS port file
 .tern-port
 
-# Observable Framework build output
-docs/
+# Observable Framework build output (this project builds to dist/)
 dist/
 .observablehq/cache/
 src/.observablehq/cache/
+# Note: docs/ is tracked — it holds authored docs/specs, not build output.
 
 # Patient data — PII, obtain from Fundación Canguro separately
 src/data/canguro.parquet
