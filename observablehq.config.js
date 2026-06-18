@@ -3,6 +3,7 @@ export default {
   title: "Explorador Canguro",
   pages: [
     { name: "Explorador", path: "/" },
+    { name: "TimeWidget (nativo)", path: "/timewidget-demo" },
     { name: "Prueba de Usabilidad", path: "/usability" },
     { name: "KMC Explorer", path: "/usability-multiple" },
   ],

@@ -7,17 +7,23 @@
     "dev": "observable preview",
     "build": "observable build",
     "deploy": "observable deploy",
-    "clean": "rm -rf docs .observablehq/cache"
+    "clean": "rm -rf docs .observablehq/cache src/.observablehq/cache",
+    "sync:timewidget": "cd ../TimeWidget && npm run build && cp dist/TimeWidget.esm.js ../exploradorCanguro/src/lib/TimeWidget.esm.js && echo 'Synced TimeWidget.esm.js'"
   },
-  "keywords": ["data-visualization", "observable-framework", "kangaroo-care", "health-metrics"],
+  "keywords": [
+    "data-visualization",
+    "observable-framework",
+    "kangaroo-care",
+    "health-metrics"
+  ],
   "author": "John Alexis Guerra Gómez",
   "license": "ISC",
   "dependencies": {
+    "d3": "^7.9.0",
     "reactive-widget-helper": "^0.0.3"
   },
   "devDependencies": {
     "@observablehq/framework": "^1.13.4",
-    "time-widget": "file:../TimeWidget",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.7"

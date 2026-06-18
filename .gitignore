@@ -116,3 +116,7 @@ src/data/base*.csv
 
 # macOS
 .DS_Store
+
+# Browser automation / test artifacts
+.playwright-mcp/
+*-render.png

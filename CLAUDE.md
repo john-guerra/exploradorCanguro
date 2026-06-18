@@ -23,8 +23,16 @@ npm run build    # build to docs/
 npm run deploy   # push docs/ to GitHub Pages
 ```
 
-**TimeWidget** lives at `../TimeWidget` (sibling directory, linked as `file:../TimeWidget` in package.json).
-To rebuild TimeWidget after local changes: `cd ../TimeWidget && npm run build`.
+**TimeWidget** is vendored as a built ESM bundle at `src/lib/TimeWidget.esm.js`, NOT
+imported from npm or a `file:` dependency. Observable Framework's Rollup bundler cannot
+resolve a symlinked `file:` dependency, and the sibling repo would not exist on a deploy/CI
+machine. Components import it relatively: `import TimeWidget from "../lib/TimeWidget.esm.js"`.
+
+To pull in local TimeWidget changes (from the sibling `../TimeWidget` repo):
+```bash
+npm run sync:timewidget   # rebuilds ../TimeWidget and copies its ESM bundle into src/lib/
+```
+TimeWidget externalizes `d3` only, so `d3` is a direct dependency here (Framework self-hosts it).
 
 ## Data
 
@@ -53,10 +61,24 @@ import ReactiveWidget from "reactive-widget-helper";
 // const selected = view(rw); // reactive — updates downstream cells on brush change
 ```
 
+Correct `reactive-widget-helper` API (verified against the installed package):
+```js
+import ReactiveWidget from "reactive-widget-helper";
+// 2-arg call: target element + { value (initial), showValue (render callback) }
+const widget = ReactiveWidget(el, { value: [], showValue: () => {} });
+widget.setValue(newVal);  // exposed METHOD — dispatches the "input" event
+widget.value;             // getter — current reactive value
+```
+
 Components:
-- `src/components/timeWidget.js` — wraps `time-widget` as reactive widget
-- `src/components/violinPlot.js` — violin plot for group distribution comparison
-- `src/components/statsCard.js` — summary statistics display card
+- `src/components/timeWidget.js` — wraps the vendored TimeWidget as a reactive widget ✅ done
+- `src/components/violinPlot.js` — violin plot for group distribution comparison (TODO)
+- `src/components/statsCard.js` — summary statistics display card (TODO)
+
+Working reference: `src/timewidget-demo.md` is a native page that loads the local TimeWidget
+with public sample data (`src/data/sample-canguro.csv`) and proves the reactive chain
+(brush → input event → Framework `view()` → downstream cells). This is the migration target;
+the `index.md`/`usability*.md` pages still bridge to the hosted notebook (see below).
 
 ## Observable Notebook (source reference)
 
