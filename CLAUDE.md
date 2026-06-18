@@ -55,13 +55,7 @@ mv src/data/*.bin src/data/canguro.parquet
 Each visualization panel follows the `reactive-widget-helper` pattern (reactivewidgets.org, IEEE VIS 2024).
 Widgets dispatch `input` events on selection change, making them composable with `view()` in Observable Framework.
 
-```js
-import ReactiveWidget from "reactive-widget-helper";
-// const rw = ReactiveWidget(domElement, initialValue, { setValue });
-// const selected = view(rw); // reactive — updates downstream cells on brush change
-```
-
-Correct `reactive-widget-helper` API (verified against the installed package):
+`reactive-widget-helper` API (verified against the installed package):
 ```js
 import ReactiveWidget from "reactive-widget-helper";
 // 2-arg call: target element + { value (initial), showValue (render callback) }
@@ -99,3 +93,20 @@ Branch: `feat/observable-framework-migration` → merge to `main` when verified
 - Fundación Canguro, Colombia: Nathalie Charpak, José Tiberio Hernández
 - Universidad Rey Juan Carlos, Madrid: Iván Velasco, Sofía Bayona, Luis Pastor
 - Northeastern University, Silicon Valley: John Alexis Guerra Gómez
+
+## Gotchas & lessons learned
+
+- **Verify in a browser, not just `npm run build`.** A clean build did NOT catch: the
+  `reactive-widget-helper` API being used wrong, the TimeWidget bundling failures, or a
+  `localhost:8080` leak. Run the dev server and load the page (Playwright/Chrome MCP) before
+  claiming a page works.
+- **Bridge pages leak `http://localhost:8080/dist/TimeSearcher.js`.** The published notebook
+  `@john-guerra/explorador-canguro@972` hardcodes that local-dev URL; it 404s in production
+  (on the live GitHub Pages site too) but degrades gracefully. Finishing the native migration
+  removes this.
+- **TimeWidget repo is `ivelascog/TimeWidget`** (Iván Velasco), not john-guerra. Its published
+  `time-widget@0.0.27` had an invalid `exports` field (`ERR_INVALID_PACKAGE_TARGET`) that breaks
+  ESM bundlers including Framework — fixed via ivelascog/TimeWidget#59 (issue) and PR #60. Until
+  that release ships, we vendor the ESM build (see TimeWidget note under Development).
+- **Don't reintroduce `file:../TimeWidget`.** Framework's Rollup can't resolve the symlink, and
+  the sibling repo won't exist on CI/deploy. Use the vendored `src/lib/TimeWidget.esm.js`.
