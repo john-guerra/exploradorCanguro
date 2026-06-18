@@ -10,6 +10,7 @@
 
 ## Global Constraints
 
+- **TimeWidget branch policy (critical):** NEVER commit to TimeWidget `main`. All TimeWidget work is developed on a branch created off `main`, pushed, and submitted as a PR with `--reviewer ivelascog` for Iván to validate and merge. We do not merge to main ourselves. Verify `git rev-list --left-right --count main...origin/main` stays `0 0`.
 - TimeWidget tests run with: `node --experimental-vm-modules node_modules/jest/bin/jest.js` (i.e. `npm test`).
 - TimeWidget renders to **canvas**; jsdom cannot exercise rendering — DOM/render behavior is verified in the browser (Playwright), not jest.
 - App imports TimeWidget from the vendored bundle `src/lib/TimeWidget.esm.js` (NOT `file:`/npm). Refresh via `npm run sync:timewidget`.
@@ -45,7 +46,18 @@
 **Interfaces:**
 - Produces: `normalizeDomain(domain, {eps?}) -> [lo, hi]` (exported from `utils.js`); `ts.setDomains({x?: [number,number], y?: [number,number]}) -> ts`; `ts.fullExtent -> { x: [number,number], y: [number,number] }`.
 
-- [ ] **Step 1: Create the failing test for `normalizeDomain`**
+**Branch:** this feature gets its OWN branch off `main` (independent PR closing #62).
+
+- [ ] **Step 1: Create the feature branch off `main`**
+
+```bash
+cd /Users/aguerra/workspace/TimeWidget
+git checkout main && git pull origin main
+git checkout -b feat/setDomains-zoom
+```
+Expected: on a clean `feat/setDomains-zoom` branch; `git status` clean.
+
+- [ ] **Step 2: Create the failing test for `normalizeDomain`**
 
 Create `/Users/aguerra/workspace/TimeWidget/tests/domain.test.js`:
 
@@ -77,12 +89,12 @@ test("passes through malformed input", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test -- tests/domain.test.js`
 Expected: FAIL — `normalizeDomain is not a function` / import error.
 
-- [ ] **Step 3: Implement `normalizeDomain` in `src/utils.js`**
+- [ ] **Step 4: Implement `normalizeDomain` in `src/utils.js`**
 
 Append to `/Users/aguerra/workspace/TimeWidget/src/utils.js`:
 
@@ -101,12 +113,12 @@ export function normalizeDomain(domain, { eps = 1e-6 } = {}) {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [ ] **Step 5: Run the test to verify it passes**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test -- tests/domain.test.js`
 Expected: PASS (5 tests).
 
-- [ ] **Step 5: Make the x-domain settable after creation (symmetry fix)**
+- [ ] **Step 6: Make the x-domain settable after creation (symmetry fix)**
 
 In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, inside `initDomains` (around lines 417-448), the x-axis currently reads the private parameter `xDomain`. Change those three sites to read the public `ts.xDomain` (mirroring how y already reads `ts.yDomain`):
 
@@ -128,7 +140,7 @@ Replace the two `overviewX.domain(xDomain);` lines (~428 and ~444) with:
       overviewX.domain(ts.xDomain);
 ```
 
-- [ ] **Step 6: Capture `ts.fullExtent` once, at the end of `initDomains`**
+- [ ] **Step 7: Capture `ts.fullExtent` once, at the end of `initDomains`**
 
 In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, immediately after the `overviewY.range(...).nice().clamp(true);` block (around line 463, the end of `initDomains`), add:
 
@@ -139,7 +151,7 @@ In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, immediately after th
     }
 ```
 
-- [ ] **Step 7: Add `ts.setDomains` and import `normalizeDomain`**
+- [ ] **Step 8: Add `ts.setDomains` and import `normalizeDomain`**
 
 In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, update the utils import near the top. Find the existing import from `./utils` and add `normalizeDomain` to it (the file already imports helpers such as `log`, `logPerformance`). If the existing line is:
 ```js
@@ -161,12 +173,12 @@ Then, immediately after the `ts.update = () => { ... };` block (ends ~line 1474)
   };
 ```
 
-- [ ] **Step 8: Run the full TimeWidget suite (regression gate)**
+- [ ] **Step 9: Run the full TimeWidget suite (regression gate)**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test`
 Expected: PASS — BVH (12) + domain (5) all green.
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 10: Commit, build, push, and open PR (closes #62)**
 
 ```bash
 cd /Users/aguerra/workspace/TimeWidget
@@ -176,8 +188,18 @@ git commit -m "feat: ts.setDomains + ts.fullExtent; make x-domain settable after
 - normalizeDomain (utils) orders/widens numeric domains, passes dates through
 - initDomains reads public ts.xDomain symmetrically with ts.yDomain
 - ts.fullExtent captures data extent once for slider bounds / reset
-- ts.setDomains({x,y}) re-renders in place via ts.update() (brushes preserved)"
+- ts.setDomains({x,y}) re-renders in place via ts.update() (brushes preserved)
+
+Closes #62"
+npm run build
+git add dist/ && git commit -m "build: bundles for setDomains zoom" || echo "(no dist change to commit)"
+git push -u origin feat/setDomains-zoom
+gh pr create --repo ivelascog/TimeWidget --base main --head feat/setDomains-zoom \
+  --reviewer ivelascog \
+  --title "feat: programmatic axis zoom via ts.setDomains({x,y}) + ts.fullExtent" \
+  --body "Implements #62. Makes the x-domain settable after creation (symmetry with y), adds ts.fullExtent and ts.setDomains({x,y}) (re-renders in place via ts.update(), preserving brushes). New jest test for normalizeDomain; BVH suite stays green. Per project policy this targets main via PR for @ivelascog to validate — do not self-merge."
 ```
+Expected: PR URL printed; `git rev-list --left-right --count main...origin/main` still `0 0`.
 
 ---
 
@@ -185,14 +207,25 @@ git commit -m "feat: ts.setDomains + ts.fullExtent; make x-domain settable after
 
 **Files:**
 - Modify: `/Users/aguerra/workspace/TimeWidget/src/BrushInteraction.js` (after `me.addBrushGroup` ~703; add export at end before `export default`)
-- Modify: `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js` (groups HTML ~225, handlers ~228-244, add `ts.duplicateSelectedGroup` near `ts.setDomains`)
+- Modify: `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js` (groups HTML ~225, handlers ~228-244, add `ts.duplicateSelectedGroup` after the `ts.render`/`ts.update` blocks ~1466-1474)
 - Test: `/Users/aguerra/workspace/TimeWidget/tests/brushGroup.test.js`
 
 **Interfaces:**
 - Consumes: `me.addFilters([groupPayload], false)` and internal `selectBrushGroup`, `updateStatus`, `updateGroups`, `brushesGroup`, `brushGroupSelected` (all in `brushInteraction` scope).
 - Produces: `cloneBrushGroupPayload(group, {suffix?}) -> { isEnable, isActive, name, brushes: [{mode, aggregation, selectionDomain}] }` (exported); `me.duplicateBrushGroup(sourceId?)`; `ts.duplicateSelectedGroup() -> ts`.
 
-- [ ] **Step 1: Create the failing test for `cloneBrushGroupPayload`**
+**Branch:** this feature gets its OWN branch off `main`, independent of Task A1 (separate PR closing #61).
+
+- [ ] **Step 1: Create the feature branch off `main`**
+
+```bash
+cd /Users/aguerra/workspace/TimeWidget
+git checkout main && git pull origin main
+git checkout -b feat/duplicate-group
+```
+Expected: on a clean `feat/duplicate-group` branch (NOT built on top of `feat/setDomains-zoom`); `git status` clean.
+
+- [ ] **Step 2: Create the failing test for `cloneBrushGroupPayload`**
 
 Create `/Users/aguerra/workspace/TimeWidget/tests/brushGroup.test.js`:
 
@@ -234,12 +267,12 @@ test("does not share the source Map reference", () => {
 });
 ```
 
-- [ ] **Step 2: Run the test to verify it fails**
+- [ ] **Step 3: Run the test to verify it fails**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test -- tests/brushGroup.test.js`
 Expected: FAIL — `cloneBrushGroupPayload is not a function`.
 
-- [ ] **Step 3: Implement `cloneBrushGroupPayload` (pure, exported)**
+- [ ] **Step 4: Implement `cloneBrushGroupPayload` (pure, exported)**
 
 In `/Users/aguerra/workspace/TimeWidget/src/BrushInteraction.js`, just above the final `export default brushInteraction;` line, add:
 
@@ -268,12 +301,12 @@ export function cloneBrushGroupPayload(group, { suffix = " (copy)" } = {}) {
 }
 ```
 
-- [ ] **Step 4: Run the test to verify it passes**
+- [ ] **Step 5: Run the test to verify it passes**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test -- tests/brushGroup.test.js`
 Expected: PASS (4 tests).
 
-- [ ] **Step 5: Add `me.duplicateBrushGroup` to the brush-interaction object**
+- [ ] **Step 6: Add `me.duplicateBrushGroup` to the brush-interaction object**
 
 In `/Users/aguerra/workspace/TimeWidget/src/BrushInteraction.js`, immediately after the `me.addBrushGroup = function () { ... };` block (ends ~line 703), add:
 
@@ -295,7 +328,7 @@ In `/Users/aguerra/workspace/TimeWidget/src/BrushInteraction.js`, immediately af
   };
 ```
 
-- [ ] **Step 6: Add the "Duplicate Group" button + handler in `TimeWidget.js`**
+- [ ] **Step 7: Add the "Duplicate Group" button + handler in `TimeWidget.js`**
 
 In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, update the groups markup (around line 222-226) to add the button:
 
@@ -324,9 +357,9 @@ And immediately after the `function onAddBrushGroup() { brushes.addBrushGroup();
   }
 ```
 
-- [ ] **Step 7: Expose `ts.duplicateSelectedGroup`**
+- [ ] **Step 8: Expose `ts.duplicateSelectedGroup`**
 
-In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, right after the `ts.setDomains = ...` block added in Task A1, add:
+In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, immediately after the `ts.update = () => { ... };` block (ends ~line 1474; this anchor exists on `main`, so it is independent of Task A1), add:
 
 ```js
   ts.duplicateSelectedGroup = () => {
@@ -335,12 +368,12 @@ In `/Users/aguerra/workspace/TimeWidget/src/TimeWidget.js`, right after the `ts.
   };
 ```
 
-- [ ] **Step 8: Run the full suite (regression gate)**
+- [ ] **Step 9: Run the full suite (regression gate)**
 
 Run: `cd /Users/aguerra/workspace/TimeWidget && npm test`
-Expected: PASS — BVH (12) + domain (5) + brushGroup (4).
+Expected: PASS — BVH (12) + brushGroup (4). (The `domain` suite from Task A1 is NOT on this branch — these are independent branches off `main`.)
 
-- [ ] **Step 9: Commit**
+- [ ] **Step 10: Commit, build, push, and open PR (closes #61)**
 
 ```bash
 cd /Users/aguerra/workspace/TimeWidget
@@ -350,60 +383,93 @@ git commit -m "feat: duplicate current brush group
 - cloneBrushGroupPayload (pure) builds an addFilters payload from a group's
   committed brushes
 - me.duplicateBrushGroup appends a copied, selected group via addFilters
-- ts.duplicateSelectedGroup() + Duplicate Group button next to Add Group"
+- ts.duplicateSelectedGroup() + Duplicate Group button next to Add Group
+
+Closes #61"
+npm run build
+git add dist/ && git commit -m "build: bundles for duplicate group" || echo "(no dist change to commit)"
+git push -u origin feat/duplicate-group
+gh pr create --repo ivelascog/TimeWidget --base main --head feat/duplicate-group \
+  --reviewer ivelascog \
+  --title "feat: duplicate the current brush group (ts.duplicateSelectedGroup)" \
+  --body "Implements #61. Adds cloneBrushGroupPayload (pure) + me.duplicateBrushGroup (reuses addFilters) + ts.duplicateSelectedGroup() and a Duplicate Group button. New jest test for cloneBrushGroupPayload; BVH suite stays green. Per project policy this targets main via PR for @ivelascog to validate — do not self-merge."
 ```
+Expected: PR URL printed; `git rev-list --left-right --count main...origin/main` still `0 0`.
 
 ---
 
-## Task A3: Build TimeWidget and open the PR
+## Task A3: Create the temporary `dev` integration branch (TimeWidget)
 
-**Files:** none (build + git/PR).
+**Why:** the two feature PRs (#61, #62) live on separate branches off `main` and are awaiting Iván's review. To build/run the app against BOTH features meanwhile, we maintain a temporary `dev` branch that merges them. This branch is throwaway scaffolding — it is deleted once Iván merges the feature PRs to `main`.
 
-- [ ] **Step 1: Build the bundles**
+**Files:** none (git only).
 
-Run: `cd /Users/aguerra/workspace/TimeWidget && npm run build`
-Expected: Rollup writes `dist/TimeWidget.esm.js`, `dist/TimeWidget.js`, `dist/TimeWidget.min.js` with no errors.
-
-- [ ] **Step 2: Push the branch (created in Task A1) and open the PR**
-
-The commits from A1/A2 are on the current TimeWidget branch (`fix/exports-field-esm-resolution` was the active branch; create a dedicated feature branch first if still on it):
+- [ ] **Step 1: Create `dev` off `main` and merge both feature branches**
 
 ```bash
 cd /Users/aguerra/workspace/TimeWidget
-git checkout -b feat/zoom-domains-duplicate-group   # only if not already on a feature branch
-git push -u origin feat/zoom-domains-duplicate-group
-gh pr create --repo ivelascog/TimeWidget --base main \
-  --head feat/zoom-domains-duplicate-group \
-  --reviewer ivelascog \
-  --title "feat: setDomains zoom API + duplicate brush group" \
-  --body "Adds ts.setDomains({x,y}) (x-domain now settable post-creation), ts.fullExtent, and ts.duplicateSelectedGroup() + a Duplicate Group button. New jest unit tests for normalizeDomain and cloneBrushGroupPayload; existing BVH suite stays green."
+git checkout main && git pull origin main
+git branch -D dev 2>/dev/null || true        # reset any previous dev
+git checkout -b dev
+git merge --no-ff feat/setDomains-zoom feat/duplicate-group -m "chore(dev): integrate zoom + duplicate group for app testing (temporary)"
 ```
+Expected: an octopus/sequential merge with both features present. If the only conflict is in `src/TimeWidget.js` where both add a `ts.*` method near `ts.update`, resolve by KEEPING BOTH additions, then `git add src/TimeWidget.js && git commit`.
 
-Expected: PR URL printed; reviewer `ivelascog` requested.
+- [ ] **Step 2: Build the combined bundle**
+
+Run: `cd /Users/aguerra/workspace/TimeWidget && npm run build && npm test`
+Expected: build succeeds; full suite green — BVH (12) + domain (5) + brushGroup (4).
+
+- [ ] **Step 3: Push `dev` (clearly temporary) so the app can reference it**
+
+```bash
+cd /Users/aguerra/workspace/TimeWidget
+git push -u origin dev
+```
+Expected: `dev` pushed. `main` still untouched: `git rev-list --left-right --count main...origin/main` → `0 0`.
+
+> Cleanup (later, after Iván merges #61 and #62 to `main`): `git push origin --delete dev` and `git branch -D dev`; then re-run the app's `sync:timewidget` against `main` (Task B1) and re-vendor.
 
 ---
 
-## Task B1: Re-vendor TimeWidget into the app
+## Task B1: Re-vendor the combined TimeWidget build into the app (temporary)
 
 **Files:**
 - Modify: `/Users/aguerra/workspace/exploradorCanguro/src/lib/TimeWidget.esm.js`
+- Modify: `/Users/aguerra/workspace/exploradorCanguro/package.json` (note the temporary source branch)
 
-- [ ] **Step 1: Sync the freshly built bundle**
+**Branch:** do the app-side feature work on a dedicated app branch so it is isolated while the TimeWidget PRs are in review.
 
-Run: `cd /Users/aguerra/workspace/exploradorCanguro && npm run sync:timewidget`
-Expected: prints `Synced TimeWidget.esm.js`; the vendored file is updated.
+- [ ] **Step 1: Create the app feature branch**
 
-- [ ] **Step 2: Sanity-check the new API is present in the bundle**
+```bash
+cd /Users/aguerra/workspace/exploradorCanguro
+git checkout -b feat/timewidget-zoom-duplicate
+```
+Expected: on `feat/timewidget-zoom-duplicate`.
+
+- [ ] **Step 2: Sync the vendored bundle from TimeWidget `dev`**
+
+```bash
+cd /Users/aguerra/workspace/TimeWidget && git checkout dev
+cd /Users/aguerra/workspace/exploradorCanguro && npm run sync:timewidget
+```
+Expected: prints `Synced TimeWidget.esm.js`; the vendored file is updated from the combined `dev` build.
+
+- [ ] **Step 3: Sanity-check the new API is present in the bundle**
 
 Run: `grep -c "setDomains\|duplicateSelectedGroup\|fullExtent" src/lib/TimeWidget.esm.js`
 Expected: a number ≥ 3 (the new identifiers are bundled).
 
-- [ ] **Step 3: Commit**
+- [ ] **Step 4: Commit (noting it is from the temporary `dev` branch)**
 
 ```bash
 cd /Users/aguerra/workspace/exploradorCanguro
 git add src/lib/TimeWidget.esm.js
-git commit -m "chore: re-vendor TimeWidget bundle with setDomains + duplicate group"
+git commit -m "chore: re-vendor TimeWidget (from temporary dev branch) with setDomains + duplicate group
+
+Temporary: built from ivelascog/TimeWidget@dev (PRs #61/#62 pending Iván's review).
+Re-sync from main once those merge."
 ```
 
 ---
