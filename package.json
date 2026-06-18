@@ -1,15 +1,23 @@
 {
-  "name": "exploradorcanguro",
+  "name": "explorador-canguro",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "Interactive data exploration tool for Kangaroo Foundation infant health research",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "observable preview",
+    "build": "observable build",
+    "deploy": "observable deploy",
+    "clean": "rm -rf docs .observablehq/cache"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["data-visualization", "observable-framework", "kangaroo-care", "health-metrics"],
+  "author": "John Alexis Guerra Gómez",
   "license": "ISC",
+  "dependencies": {
+    "reactive-widget-helper": "^0.0.3"
+  },
   "devDependencies": {
+    "@observablehq/framework": "^1.13.4",
+    "time-widget": "file:../TimeWidget",
     "eslint": "^8.38.0",
     "eslint-config-prettier": "^8.8.0",
     "prettier": "^2.8.7"

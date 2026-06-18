@@ -63,7 +63,7 @@ typings/
 .node_repl_history
 
 # Output of 'npm pack'
-*.tgz
+# *.tgz  -- excluded: notebooks/*.tgz are source archives we want to track
 
 # Yarn Integrity file
 .yarn-integrity
@@ -102,3 +102,17 @@ dist
 
 # TernJS port file
 .tern-port
+
+# Observable Framework build output
+docs/
+dist/
+.observablehq/cache/
+src/.observablehq/cache/
+
+# Patient data — PII, obtain from Fundación Canguro separately
+src/data/canguro.parquet
+src/data/canguro*.csv
+src/data/base*.csv
+
+# macOS
+.DS_Store
