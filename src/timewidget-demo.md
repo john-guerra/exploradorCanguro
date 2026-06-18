@@ -15,6 +15,7 @@ cells underneath.
 
 ```js
 import {timeWidgetReactive} from "./components/timeWidget.js";
+import { rangeSlider } from "./components/rangeSlider.js";
 ```
 
 ```js
@@ -27,6 +28,11 @@ const curvasPeso = await FileAttachment("data/curvasPeso.json").json();
 ```js
 // Keep rows with a valid weight and gestational time.
 const data = raw.filter((d) => d.peso != null && d.__time != null);
+```
+
+```js
+const weekExtent   = d3.extent(data, (d) => d.__time);
+const weightExtent = d3.extent(data, (d) => d.peso);
 ```
 
 ```js
@@ -50,7 +56,48 @@ tw.ts.addReferenceCurves(curvasPeso);
 ```
 
 ```js
-const selected = view(tw);
+const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: 600, label: "Semanas" });
+const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: 500, label: "Peso (g)" });
+```
+
+```js
+const weeks  = view(weeksSlider);
+```
+
+```js
+const weight = view(weightSlider);
+```
+
+```js
+// Re-zoom whenever a slider changes; brush selections persist (ts.update reapplies them).
+tw.ts.setDomains({ x: weeks, y: weight });
+```
+
+```js
+const resetBtn = html`<button class="btn btn-sm btn-outline-secondary">Reset zoom</button>`;
+resetBtn.onclick = () => {
+  weeksSlider.setValue(tw.ts.fullExtent.x);
+  weightSlider.setValue(tw.ts.fullExtent.y);
+};
+
+const dupBtn = html`<button class="btn btn-sm btn-outline-primary">Duplicar grupo</button>`;
+dupBtn.onclick = () => tw.ts.duplicateSelectedGroup();
+
+display(html`<div style="display:flex; gap:.5rem; margin:.5rem 0;">${resetBtn}${dupBtn}</div>`);
+```
+
+```js
+display(html`
+  <div style="display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; gap:.5rem; align-items:center;">
+    <div style="grid-row:1; grid-column:1;">${weightSlider}</div>
+    <div style="grid-row:1; grid-column:2;">${tw}</div>
+    <div style="grid-row:2; grid-column:2;">${weeksSlider}</div>
+  </div>
+`);
+```
+
+```js
+const selected = Generators.input(tw);
 ```
 
 ```js
