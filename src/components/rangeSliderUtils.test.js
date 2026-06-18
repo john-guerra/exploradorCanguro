@@ -17,3 +17,7 @@ test("snaps to step", () => {
 test("keeps an in-range, on-step value unchanged", () => {
   assert.deepEqual(clampRange([20, 60], [0, 100], 10), [20, 60]);
 });
+
+test("makes domain endpoints reachable when step does not divide the span", () => {
+  assert.deepEqual(clampRange([0, 99307], [0, 99307], 100), [0, 99307]);
+});
