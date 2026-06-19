@@ -26,14 +26,25 @@ const weightExtent = d3.extent(data, (d) => d.peso);
 ```
 
 ```js
+// Chart + plot geometry, shared by the chart and the axis-aligned sliders.
+const margin = { left: 50, top: 30, right: 50, bottom: 50 };
+const chartW = Math.min(width - 80, 900);
+const chartH = 500;
+const plotW = chartW - margin.left - margin.right;
+const plotH = chartH - margin.top - margin.bottom;
+const sliderThickness = 34;
+```
+
+```js
 const tw = timeWidgetReactive(data, {
   x: "__time",
   y: "peso",
   id: "id",
   groupAttr: "sex",
   renderer: "canvas",
-  width: Math.min(width - 40, 900),
-  height: 500,
+  width: chartW,
+  height: chartH,
+  margin,
   xLabel: "Edad gestacional (semanas)",
   yLabel: "Peso (g)",
   showGroupMedian: true,
@@ -42,8 +53,9 @@ tw.ts.addReferenceCurves(curvas);
 ```
 
 ```js
-const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: 600, label: "Semanas" });
-const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: 500, label: "Peso (g)" });
+// Sliders sized to the chart's plot area so they sit directly on the axes.
+const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: plotW, thickness: sliderThickness, label: "" });
+const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: plotH, thickness: sliderThickness, label: "" });
 ```
 
 ```js
@@ -69,11 +81,14 @@ display(html`<div style="margin:.5rem 0;">${resetBtn}</div>`);
 ```
 
 ```js
+// Place the sliders directly on the axes: the vertical weight slider spans the
+// plot's y-range just left of the y-axis; the horizontal weeks slider spans the
+// plot's x-range just under the x-axis.
 display(html`
-  <div style="display:grid; grid-template-columns:auto 1fr; grid-template-rows:auto auto; gap:.5rem; align-items:center;">
-    <div style="grid-row:1; grid-column:1;">${weightSlider}</div>
-    <div style="grid-row:1; grid-column:2;">${tw}</div>
-    <div style="grid-row:2; grid-column:2;">${weeksSlider}</div>
+  <div style="position:relative; width:${sliderThickness + chartW}px; height:${chartH + sliderThickness + 4}px;">
+    <div style="position:absolute; left:0; top:${margin.top}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${sliderThickness}px; top:0;">${tw}</div>
+    <div style="position:absolute; left:${sliderThickness + margin.left}px; top:${chartH}px;">${weeksSlider}</div>
   </div>
 `);
 ```
