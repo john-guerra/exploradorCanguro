@@ -109,6 +109,11 @@ dist/
 src/.observablehq/cache/
 # Note: docs/ is tracked — it holds authored docs/specs, not build output.
 
+# Raw patient export (PII) — obtain separately, never commit
+/data/
+# Generated anonymized dataset — keep build-generated until governance sign-off
+src/data/canguro.csv
+
 # Patient data — PII, obtain from Fundación Canguro separately
 src/data/canguro.parquet
 src/data/canguro*.csv
