@@ -7,8 +7,9 @@ title: Explorador Canguro
 Explorador nativo (Observable Framework) de trayectorias de peso de bebés prematuros
 del Programa Canguro. Usa la librería **TimeWidget** local con zoom por semanas y peso.
 
-> Nota: la definición de grupos (G1/G2) y los paneles estadísticos (tarjeta de estadísticas,
-> comparación y violines) llegan en fases posteriores de la migración.
+> Nota: abajo se comparan los grupos por **sexo** (los datos publicados son anónimos). La
+> definición de grupos arbitrarios (G1/G2 estilo RCIU vía FacetedSearch) requiere incluir más
+> atributos en el conjunto anonimizado — pendiente de revisión de privacidad.
 
 ```js
 import { timeWidgetReactive } from "./components/timeWidget.js";
@@ -32,7 +33,7 @@ const chartW = Math.min(width - 80, 900);
 const chartH = 500;
 const plotW = chartW - margin.left - margin.right;
 const plotH = chartH - margin.top - margin.bottom;
-const sliderThickness = 34;
+const sliderThickness = 26;
 ```
 
 ```js
@@ -53,9 +54,10 @@ tw.ts.addReferenceCurves(curvas);
 ```
 
 ```js
-// Sliders sized to the chart's plot area so they sit directly on the axes.
-const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: plotW, thickness: sliderThickness, label: "" });
-const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: plotH, thickness: sliderThickness, label: "" });
+// Sliders sized to the exact plot area (pad:0) with no label, so the track lays
+// precisely over the chart axis line.
+const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: plotW, thickness: sliderThickness, pad: 0, label: null });
+const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: plotH, thickness: sliderThickness, pad: 0, label: null });
 ```
 
 ```js
@@ -81,17 +83,83 @@ display(html`<div style="margin:.5rem 0;">${resetBtn}</div>`);
 ```
 
 ```js
-// Place the sliders directly on the axes: the vertical weight slider spans the
-// plot's y-range just left of the y-axis; the horizontal weeks slider spans the
-// plot's x-range just under the x-axis.
+// Overlay each slider's track exactly on its axis line. The track centerline sits
+// at thickness/2 within the slider; offset by that so it lands on the axis.
+const half = sliderThickness / 2;
 display(html`
-  <div style="position:relative; width:${sliderThickness + chartW}px; height:${chartH + sliderThickness + 4}px;">
-    <div style="position:absolute; left:0; top:${margin.top}px;">${weightSlider}</div>
-    <div style="position:absolute; left:${sliderThickness}px; top:0;">${tw}</div>
-    <div style="position:absolute; left:${sliderThickness + margin.left}px; top:${chartH}px;">${weeksSlider}</div>
+  <div style="position:relative; width:${chartW}px; height:${chartH}px;">
+    <div style="position:absolute; left:0; top:0;">${tw}</div>
+    <div style="position:absolute; left:${margin.left - half}px; top:${margin.top}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left}px; top:${margin.top + plotH - half}px;">${weeksSlider}</div>
   </div>
 `);
 ```
+
+## Comparación de grupos (por sexo)
+
+Selecciona una ventana de tiempo con un brush en la gráfica; las tarjetas y la distribución de
+abajo se actualizan con los puntos seleccionados (acoplamiento directo).
+
+```js
+const selected = Generators.input(tw);
+```
+
+```js
+const metric = view(Inputs.select(
+  new Map([["Peso (g)", "peso"], ["Talla (mm)", "talla"], ["Perímetro cefálico (mm)", "PC"]]),
+  { label: "Métrica", value: "peso" }
+));
+```
+
+```js
+// Points inside the current brush selection; fall back to all data before any brush.
+const selectedPoints = (() => {
+  const pts = (Array.isArray(selected) ? selected : []).flatMap((g) => g?.data || []);
+  return pts.length ? pts : data;
+})();
+const sexLabel = (s) => (s === 1 ? "Masculino" : s === 2 ? "Femenino" : "Otro");
+```
+
+```js
+// summary stats per sex for the chosen metric over the selection
+const statsBySex = d3
+  .rollups(
+    selectedPoints.filter((d) => d[metric] != null),
+    (v) => ({ n: v.length, mean: d3.mean(v, (d) => d[metric]), median: d3.median(v, (d) => d[metric]), sd: d3.deviation(v, (d) => d[metric]) }),
+    (d) => d.sex
+  )
+  .sort((a, b) => d3.ascending(a[0], b[0]));
+```
+
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Tarjeta de estadísticas — ${metric}</h3>
+    ${Inputs.table(
+      statsBySex.map(([sex, s]) => ({
+        Grupo: sexLabel(sex), n: s.n,
+        Media: s.mean != null ? s.mean.toFixed(1) : "—",
+        Mediana: s.median != null ? s.median.toFixed(1) : "—",
+        "Desv.": s.sd != null ? s.sd.toFixed(1) : "—",
+      })),
+      { header: { Grupo: "Grupo", n: "n", Media: "Media", Mediana: "Mediana", "Desv.": "Desv. est." } }
+    )}
+  </div>
+  <div class="card">
+    <h3>Distribución — ${metric}</h3>
+    ${Plot.plot({
+      height: 280,
+      marginLeft: 60,
+      x: { label: "Sexo" },
+      y: { label: metric, grid: true },
+      color: { legend: false },
+      marks: [
+        Plot.boxY(selectedPoints.filter((d) => d[metric] != null), {
+          x: (d) => sexLabel(d.sex), y: metric, fill: (d) => sexLabel(d.sex), fillOpacity: 0.3,
+        }),
+      ],
+    })}
+  </div>
+</div>
 
 ## Contributors
 
