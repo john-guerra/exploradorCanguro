@@ -71,12 +71,18 @@ Components:
 - `src/components/violinPlot.js` — violin plot for group distribution comparison (TODO)
 - `src/components/statsCard.js` — summary statistics display card (TODO)
 
-**Zoom axes:** `index.md` uses the published **`@john-guerra/d3-zoomable-axis@0.0.5`**
-(`/input` reactive widget) for the x/y zoom handles — native `<input type=range>`, so
-keyboard- and screen-reader-accessible. It lays *over* TimeWidget's own axes (bare overlay:
-its ticks/domain are hidden via CSS; its domain line lands on the axis by geometry,
-`axLine = margin + thickness/2 = 44`). TimeWidget can't yet suppress its own axes, so a full
-"the-axis-IS-the-zoom-control" integration would need a TimeWidget `showAxis:false` option (PR).
+**Zoom axes:** `index.md` and `timewidget-demo.md` use the published
+**`@john-guerra/d3-zoomable-axis@0.0.5`** (`/input` reactive widget) for the x/y zoom handles —
+native `<input type=range>`, so keyboard- and screen-reader-accessible. The zoomable axis **is**
+the chart's visible axis: TimeWidget's own axes are suppressed via `showXAxis:false,
+showYAxis:false` (see below), and the zoomable axis draws the ticks + a scented distribution
+(gestational-age histogram on x, weight violin on y) + drag/pan handles. It's positioned by
+geometry so its domain line lands on the plot edge (`axLine = margin + thickness/2 = 44`;
+container at `left: margin.left - axLine`, etc.). CSS gives `.zoomable-axis-input` `z-index:5`
+so it sits above the chart canvas/brush.
+
+`showXAxis`/`showYAxis` come from **TimeWidget `feat/optional-axes`** (ivelascog/TimeWidget#68,
+issue #67), currently vendored ahead of merge. When #68 merges, re-sync `src/lib` from `main`.
 
 Working reference: `src/timewidget-demo.md` is a native page that loads the local TimeWidget
 with public sample data (`src/data/sample-canguro.csv`) and proves the reactive chain
