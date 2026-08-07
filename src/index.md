@@ -12,10 +12,9 @@ del Programa Canguro. Usa la librería **TimeWidget** local con zoom por semanas
 > atributos en el conjunto anonimizado — pendiente de revisión de privacidad.
 
 <style>
-/* The zoomable axes lay bare over TimeWidget's own axes: hide their ticks and
-   domain line so only the draggable handles + pan band show through. */
-.zoomable-axis-input .za-axis .tick,
-.zoomable-axis-input .za-axis .domain { display: none; }
+/* The zoomable axes ARE the chart's axes (TimeWidget's own are suppressed via
+   showXAxis/showYAxis:false), so keep them above the chart canvas + brush. */
+.zoomable-axis-input { z-index: 5; }
 </style>
 
 ```js
@@ -59,6 +58,9 @@ const tw = timeWidgetReactive(data, {
   xLabel: "Edad gestacional (semanas)",
   yLabel: "Peso (g)",
   showGroupMedian: true,
+  // The zoomable axes below ARE the visible axes — suppress TimeWidget's own.
+  showXAxis: false,
+  showYAxis: false,
 });
 tw.ts.addReferenceCurves(curvas);
 ```
@@ -69,11 +71,13 @@ tw.ts.addReferenceCurves(curvas);
 // bare over TimeWidget's existing axes; only the handles + drag band show.
 const weeksSlider = zoomableAxisInput(weekExtent, {
   orient: "bottom", step: 1, length: plotW, value: weekExtent,
-  label: "Semanas", units: "sem",
+  label: "Edad gestacional", units: "sem",
+  scent: { values: data.map((d) => d.__time), type: "histogram", bins: 40 },
 });
 const weightSlider = zoomableAxisInput(weightExtent, {
   orient: "left", step: 100, length: plotH, value: weightExtent,
   label: "Peso", units: "g",
+  scent: { values: data.map((d) => d.peso), type: "violin", bins: 40 },
 });
 ```
 
