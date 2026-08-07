@@ -2,7 +2,19 @@
 // Wide (673-col) rows -> slim long-format rows the chart consumes, with
 // surrogate ids and a k-anonymity report. No I/O, no PII columns emitted.
 
-export const OUTPUT_COLUMNS = ["id", "__stageName", "__stageId", "__time", "sex", "peso", "talla", "PC"];
+export const OUTPUT_COLUMNS = ["id", "__stageName", "__stageId", "__time", "sex", "rciu", "gaCat", "peso", "talla", "PC"];
+
+// Coarse, low-risk clinical grouping attributes (booleans / wide categoricals with
+// large group sizes). RCIU is the project's core comparison (RCIU vs non-RCIU).
+function rciuLabel(r) {
+  return r.RCIUFenton === "1" ? "RCIU" : r.RCIUFenton === "0" ? "No RCIU" : null;
+}
+function gaCategory(ballard) {
+  if (ballard == null) return null;
+  if (ballard < 32) return "<32 sem";
+  if (ballard < 37) return "32-36 sem";
+  return "≥37 sem";
+}
 
 // Verbatim stage map from notebook sub-module b205fb52cf643a23@269.js (_stages).
 export const STAGES = [
@@ -60,6 +72,8 @@ export function buildAnonRows(rawRows, stages = STAGES, { k = 5 } = {}) {
         __stageId: stage.id,
         __time: time,
         sex: num(r.ERN_Sexo),
+        rciu: rciuLabel(r),
+        gaCat: gaCategory(num(r.ERN_Ballard)),
         peso: null, talla: null, PC: null,
       };
       for (const v of stage.variables) {

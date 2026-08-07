@@ -7,12 +7,12 @@ import { buildAnonRows, OUTPUT_COLUMNS } from "./anonymize.js";
 function rawFixture() {
   return [
     {
-      Code: "ABC-1", ERN_Sexo: "1", ERN_Ballard: "30",
+      Code: "ABC-1", ERN_Sexo: "1", ERN_Ballard: "30", RCIUFenton: "1",
       ERN_Peso: "1500", ERN_Talla: "40", ERN_PC: "28",
       V218: "3000", V219: "50", V220: "35",     // Semana 40 (time 40)
     },
     {
-      Code: "ABC-2", ERN_Sexo: "2", ERN_Ballard: "32",
+      Code: "ABC-2", ERN_Sexo: "2", ERN_Ballard: "32", RCIUFenton: "0",
       ERN_Peso: "1800", ERN_Talla: "42", ERN_PC: "29",
       V218: "20000", V219: "51", V220: "36",    // peso 20000 -> dropped by window
     },
@@ -35,6 +35,16 @@ test("reshapes wide rows to long rows per stage with mapped peso/talla/PC", () =
   const s40 = rows.find((r) => r.id === "P000001" && r.__stageName === "Semana 40");
   assert.equal(s40.__time, 40);
   assert.equal(s40.peso, 3000);
+});
+
+test("derives coarse grouping attributes (rciu, gaCat) per patient", () => {
+  const { rows } = buildAnonRows(rawFixture());
+  const p1 = rows.find((r) => r.id === "P000001");
+  assert.equal(p1.rciu, "RCIU");      // RCIUFenton "1"
+  assert.equal(p1.gaCat, "<32 sem");  // Ballard 30
+  const p2 = rows.find((r) => r.id === "P000002");
+  assert.equal(p2.rciu, "No RCIU");   // RCIUFenton "0"
+  assert.equal(p2.gaCat, "32-36 sem"); // Ballard 32
 });
 
 test("drops rows outside the analysis window (peso >= 15000)", () => {
