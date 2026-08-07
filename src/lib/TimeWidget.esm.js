@@ -1081,6 +1081,29 @@ function isInsideDomain(domain, scaleX, scaleY) {
   );
 }
 
+// Clamp a brush selectionDomain into the current axis domains.
+//
+// A selectionDomain is [[xLow, yHigh], [xHigh, yLow]]: it is built from the
+// pixel corners [[left, top], [right, bottom]], and scaleY inverts (its range
+// is [height, 0]), so the FIRST pair carries the HIGH y value. normalizeDomain
+// works in ascending order, so y is reversed on the way in and must be
+// reversed again on the way out — returning it ascending flips the brush
+// upside down. isInsideDomain() encodes the same convention.
+function clampToDomain(domain, xDomain, yDomain) {
+  let clampedX = normalizeDomain([domain[0][0], domain[1][0]], xDomain, {
+    eps: 0,
+  });
+  let clampedY = normalizeDomain([domain[1][1], domain[0][1]], yDomain, {
+    eps: 0,
+  });
+  // Nothing sensible to clamp to — leave the selection as it was.
+  if (!clampedX || !clampedY) return domain;
+  return [
+    [clampedX[0], clampedY[1]],
+    [clampedX[1], clampedY[0]],
+  ];
+}
+
 const BrushModes = Object.freeze({
   Intersect: "intersect",
   Contains: "contains",
@@ -1091,17 +1114,71 @@ const BrushAggregation = Object.freeze({
     Or: "or",
 });
 
-// Normalize a numeric [lo, hi] domain: order endpoints, widen a zero-width
-// interval by eps. Non-numeric domains (e.g. Dates) and malformed input pass
-// through unchanged so the scaleTime path is never broken.
-function normalizeDomain(domain, { eps = 1e-6 } = {}) {
-  if (!Array.isArray(domain) || domain.length !== 2) return domain;
+// Normalize a [lo, hi] domain against the axis's full data extent: order the
+// endpoints, widen a zero-width interval by eps, and clamp the result inside
+// extent. Numbers and Dates are both supported; a Date domain returns Dates.
+// Returns null for anything malformed, so callers can `|| fallback`.
+//
+// `extent` is a single axis pair, e.g. ts.fullExtent.x — NOT the whole
+// {x, y} object. Passing the object silently disabled clamping before, so a
+// bad extent now warns rather than quietly doing nothing.
+function normalizeDomain(domain, extent, { eps = 1e-6 } = {}) {
+  if (!Array.isArray(domain) || domain.length !== 2) return null;
+
   let [lo, hi] = domain;
-  if (typeof lo !== "number" || typeof hi !== "number") return domain;
-  if (Number.isNaN(lo) || Number.isNaN(hi)) return domain;
   if (lo > hi) [lo, hi] = [hi, lo];
+
+  let isDate = false;
+  if (lo instanceof Date && hi instanceof Date) {
+    lo = lo.getTime();
+    hi = hi.getTime();
+    isDate = true;
+  }
+
+  if (typeof lo !== "number" || typeof hi !== "number") {
+    console.warn("normalizeDomain: unsupported domain type", domain);
+    return null;
+  }
+  if (Number.isNaN(lo) || Number.isNaN(hi)) return null;
   if (lo === hi) hi = lo + eps;
-  return [lo, hi];
+
+  let bounds = Array.isArray(extent) && extent.length === 2 ? extent : null;
+  if (extent !== undefined && !bounds) {
+    console.warn(
+      "normalizeDomain: expected an [lo, hi] extent pair, got",
+      extent,
+      "\u2014 skipping clamp"
+    );
+  }
+  if (bounds) {
+    let [min, max] = bounds.map((d) => (d instanceof Date ? d.getTime() : d));
+    if (lo <= min) lo = min;
+    if (hi <= min) hi = min + eps;
+    if (hi >= max) hi = max;
+    if (lo >= max) lo = max - eps;
+  }
+
+  return isDate ? [new Date(lo), new Date(hi)] : [lo, hi];
+}
+
+// Resolve a {x, y} pair of requested domains against the widget's full extent.
+// Takes the whole {x, y} extent object and does the per-axis lookup itself, so
+// a caller cannot hand normalizeDomain the wrong shape — the mistake that
+// silently disabled clamping in ts.setDomains(). An axis that is not requested,
+// or whose request is malformed, keeps its current domain.
+// NOTE: no `??` / `?.` here — the build's rollup-plugin-ascii bundles an old
+// acorn that cannot parse them, and rollup fails before Babel ever runs.
+function resolveDomains(requested = {}, fullExtent = {}, current = {}) {
+  let resolved = {};
+  for (let axis of ["x", "y"]) {
+    let ask = requested[axis];
+    let next =
+      ask === undefined || ask === null
+        ? null
+        : normalizeDomain(ask, fullExtent[axis]);
+    resolved[axis] = next === null ? current[axis] : next;
+  }
+  return resolved;
 }
 
 // import {log} from "./utils.js";
@@ -3242,6 +3319,10 @@ function brushInteraction({
     return selection.map(([x, y]) => [scaleX.invert(x), scaleY.invert(y)]);
   }
 
+  function getSelectionPixels(selectionDomain) {
+    return selectionDomain.map(([x, y]) => [scaleX(x), scaleY(y)]);
+  }
+
   // Update brush intersections when moved
   function brushed({ selection, sourceEvent }, brush) {
       logPerformance();
@@ -4019,19 +4100,36 @@ function brushInteraction({
 
       for (const brush of group.brushes) {
         if (!isInsideDomain(brush.selectionDomain, scaleX, scaleY)) {
-          // Keep the canonical data-domain selection so the brush stays anchored
-          // to its data range when the domain changes (e.g. zoom). The brush extent
-          // clips the rendered pixels to the viewport, and zooming back out restores
-          // the full selection. Only fall back when there is no usable domain at all.
-          if (!brush.selectionDomain) {
-            brush.selectionDomain = brush.selection
-              ? getSelectionDomain(brush.selection)
-              : getSelectionDomain([
-                  [0, 100],
-                  [0, 100],
-                ]);
-          }
+          brush.selectionDomain = clampToDomain(brush.selectionDomain, scaleX.domain(), scaleY.domain());
         }
+        // Clamping can squash a brush that only partly overlaps the new domain
+        // down to (or below) the minimum interactive size. Grow it back off the
+        // edge it is pinned against, so it stays grabbable.
+        let [[x0, y0], [x1, y1]] = getSelectionPixels(brush.selectionDomain);
+        let resized = false;
+        if (Math.abs(x0 - x1) < minBrushSize) {
+          if (x0 === 0) {
+            x1 = x0 + minBrushSize;
+          } else {
+            x0 = x1 - minBrushSize;
+          }
+          resized = true;
+        }
+        if (Math.abs(y0 - y1) < minBrushSize) {
+          if (y0 === 0) {
+            y1 = y0 + minBrushSize;
+          } else {
+            y0 = y1 - minBrushSize;
+          }
+          resized = true;
+        }
+        if (resized) {
+          brush.selectionDomain = getSelectionDomain([
+            [x0, y0],
+            [x1, y1],
+          ]);
+        }
+
         newBrush(brush.mode, brush.aggregation, groupId, brush.selectionDomain);
         brushSize++; // The brushSize will not be increased in onStartBrush
         // because the last brush added will be the one set for a new Brush.
@@ -4090,6 +4188,10 @@ function cloneBrushGroupPayload(group, { suffix = " (copy)" } = {}) {
     brushes,
   };
 }
+
+// Serial number for DOM ids that must be unique across the whole document
+// rather than merely within one widget (see clipId below).
+let instanceCounter = 0;
 
 function TimeWidget(
   data,
@@ -4178,6 +4280,10 @@ function TimeWidget(
   width = overviewWidth || width;
   height = overviewHeight || height;
   detailsMargin = detailsMargin || margin;
+
+  // Stable for the lifetime of this widget: init() re-runs on every update, and
+  // the clipPath must keep the same id so gReferences' url(#…) stays resolvable.
+  const clipId = `plotClip-${++instanceCounter}`;
 
   let ts = {},
     groupedData,
@@ -4546,17 +4652,12 @@ function TimeWidget(
 
     overviewY = yScale.copy();
 
-      overviewY.domain(ts.yDomain);
+    overviewY.domain(ts.yDomain);
 
-    overviewY
-      .range([height - ts.margin.top - ts.margin.bottom, 0])
-      .nice()
-      .clamp(true);
-
-    // Full data extent captured once, before any zoom narrows the domains.
-    if (!ts.fullExtent) {
-      ts.fullExtent = { x: d3.extent(fData, x), y: d3.extent(fData, y) };
-    }
+    // No .clamp(true): with clamping, points outside a zoomed y-domain pile up
+    // as false flat lines on the top and bottom edges. They are hidden by the
+    // clip-path instead (see #65).
+    overviewY.range([height - ts.margin.top - ts.margin.bottom, 0]).nice();
   }
 
   function init() {
@@ -4572,8 +4673,8 @@ function TimeWidget(
     timelineOverview = TimeLineOverview({
       ts,
       element: divRender.node(),
-      width: width,
-      height: height,
+        width: width - margin.left - margin.right,
+        height: height - margin.top - margin.bottom,
       x,
       y,
       groupAttr: color,
@@ -4626,6 +4727,23 @@ function TimeWidget(
             break;
         }
       });
+
+      // clip-path is resolved by url(#id) against the whole document, not
+      // scoped to this widget's subtree the way our other ids are — so two
+      // TimeWidgets on one page would both answer to the same name and the
+      // second would be clipped by the first one's rect. Hence the per-instance id.
+      let clip = g.selectAll("#" + clipId)
+          .data([1])
+          .join("clipPath")
+          .attr("id", clipId);
+
+      clip.selectAll("rect")
+          .data([1])
+          .join("rect")
+          .attr("x", 0)
+          .attr("y", 0)
+          .attr("width", width - margin.right - margin.left)
+          .attr("height", height - margin.top - margin.bottom);
 
     let yAxis = d3.axisLeft(overviewY);
     if (yTicks) {
@@ -4706,6 +4824,7 @@ function TimeWidget(
       .data([1])
       .join("g")
       .attr("class", "gReferences")
+      .attr("clip-path", `url(#${clipId})`)
       .style("pointer-events", "none");
 
     gmainY
@@ -4764,8 +4883,6 @@ function TimeWidget(
       data: groupedData,
       tooltipTarget: divRender.node(),
       contextMenuTarget: divRender.node(),
-      width,
-      height,
       xPartitions,
       yPartitions,
       x,
@@ -4815,7 +4932,8 @@ function TimeWidget(
 
       // Seed from the constructor option once, then always redraw stored curves
       // against the freshly-built scales so they track zoom (setDomains -> init).
-      if (referenceCurves && !ts._referenceCurves) ts._referenceCurves = referenceCurves;
+      if (referenceCurves && !ts._referenceCurves)
+        storeReferenceCurves(referenceCurves);
       renderReferenceCurves();
 
       return g;
@@ -5457,26 +5575,40 @@ function TimeWidget(
       return outMap;
     } */
 
+  // Keep sorted COPIES of the reference curves. d3.line() connects points in
+  // array order, so they have to be sorted by x — but the arrays belong to the
+  // caller, and sorting in place would reorder data they still hold. Holding
+  // whole copies (rather than clipping them to the domain, as the original code
+  // did) is what lets zooming back out restore points a narrower domain hid.
+  // Used by both entry points: this setter and the constructor option.
+  // NOTE: Object.assign/slice rather than spread — rollup-plugin-ascii bundles
+  // an acorn too old to parse object spread, and it runs before Babel.
+  function storeReferenceCurves(curves) {
+    ts._referenceCurves = curves.map((c) =>
+      Object.assign({}, c, {
+        data: c.data.slice().sort((a, b) => d3.ascending(a[0], b[0])),
+      })
+    );
+  }
+
   ts.addReferenceCurves = function (curves) {
     if (!Array.isArray(curves)) {
       throw new Error("The reference curves must be an array of Objects");
     }
-    // Store the originals (do NOT mutate) so curves can be re-projected on every
-    // domain change (e.g. zoom via setDomains). renderReferenceCurves clips a copy
-    // to the current domain at draw time.
-    ts._referenceCurves = curves;
+    storeReferenceCurves(curves);
     renderReferenceCurves();
     return ts;
   };
 
-  // Draw the stored reference curves against the CURRENT scales, clipping a copy
-  // to the current domain. Non-destructive: the stored curve data is never mutated,
-  // so zooming out restores points that a narrower domain had hidden.
+  // Draw the stored reference curves against the CURRENT scales. The full curve
+  // is always drawn and the clipPath on gReferences hides whatever falls outside
+  // the plot area — that keeps the line geometry intact, so a curve with few
+  // points doesn't lose a whole segment the moment one endpoint leaves the
+  // domain. Nothing here mutates the stored data, so zooming out restores
+  // everything a narrower domain had hidden.
   function renderReferenceCurves() {
     const curves = ts._referenceCurves;
     if (!curves || !overviewX || !gReferences) return;
-    const domainX = overviewX.domain();
-    const domainY = overviewY.domain();
     const line2 = d3
       .line()
       .defined((d) => d[1] !== undefined && d[1] !== null)
@@ -5488,19 +5620,7 @@ function TimeWidget(
       .data(curves)
       .join("path")
       .attr("class", "referenceCurve")
-      .attr("d", (c) =>
-        line2(
-          c.data
-            .filter(
-              (p) =>
-                p[0] >= domainX[0] &&
-                p[0] <= domainX[1] &&
-                p[1] >= domainY[0] &&
-                p[1] <= domainY[1]
-            )
-            .sort((a, b) => d3.ascending(a[0], b[0]))
-        )
-      )
+      .attr("d", (c) => line2(c.data))
       .attr("stroke-width", 2)
       .style("fill", "none")
       .style("stroke", (c) => c.color)
@@ -5528,9 +5648,23 @@ function TimeWidget(
         x(d) !== null
     );
 
-      let xDataType = typeof x(fData[0]);
+    let xDataType = typeof x(fData[0]);
 
-      initDomains({xDataType, fData});
+    // Full data extent, recomputed for each new dataset. Zooming goes through
+    // ts.update(), never through here, so this is not narrowed by a zoom — but
+    // it must follow the data: domains are clamped to fullExtent, so a stale
+    // one would make records outside the first dataset's range unreachable.
+    ts.fullExtent = { x: d3.extent(fData, x), y: d3.extent(fData, y) };
+
+    // The xDomain/yDomain constructor options were copied onto ts.* at creation
+    // time, before any data (and so before fullExtent) existed. Validate them
+    // here against the real extent, writing back to ts.* — that is what
+    // initDomains() reads. A malformed domain normalizes to null, which lets
+    // initDomains fall back to the full data extent.
+    if (ts.xDomain) ts.xDomain = normalizeDomain(ts.xDomain, ts.fullExtent.x);
+    if (ts.yDomain) ts.yDomain = normalizeDomain(ts.yDomain, ts.fullExtent.y);
+
+    initDomains({ xDataType, fData });
 
       fData = fData.filter(
           (d) => !isNaN(overviewX(x(d))) && !isNaN(overviewY(y(d)))
@@ -5564,8 +5698,7 @@ function TimeWidget(
     overviewY = d3
       .scaleLinear()
       .range([height - ts.margin.top - ts.margin.bottom, 0])
-      .nice()
-      .clamp(true);
+        .nice();
     init();
   }
 
@@ -5586,16 +5719,26 @@ function TimeWidget(
     };
 
   ts.setDomains = ({ x, y } = {}) => {
-    if (x) ts.xDomain = normalizeDomain(x);
-    if (y) ts.yDomain = normalizeDomain(y);
+    let next = resolveDomains(
+      { x, y },
+      ts.fullExtent,
+      { x: ts.xDomain, y: ts.yDomain }
+    );
+    ts.xDomain = next.x;
+    ts.yDomain = next.y;
     ts.update();
     return ts;
+  };
+
+  ts.getExtent = () => {
+    return ts.fullExtent;
   };
 
   ts.duplicateSelectedGroup = () => {
     brushes.duplicateBrushGroup();
     return ts;
   };
+
 
   // Remove possible previous event listener
   //target.removeEventListener("TimeWidget", onTimeWidgetEvent);
