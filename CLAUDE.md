@@ -66,13 +66,23 @@ widget.value;             // getter — current reactive value
 
 Components:
 - `src/components/timeWidget.js` — wraps the vendored TimeWidget as a reactive widget ✅ done
+- `src/components/rangeSlider.js` — homegrown on-axis dual-range slider; still used by
+  `timewidget-demo.md`. (`index.md` migrated off it — see below.)
 - `src/components/violinPlot.js` — violin plot for group distribution comparison (TODO)
 - `src/components/statsCard.js` — summary statistics display card (TODO)
 
+**Zoom axes:** `index.md` uses the published **`@john-guerra/d3-zoomable-axis@0.0.5`**
+(`/input` reactive widget) for the x/y zoom handles — native `<input type=range>`, so
+keyboard- and screen-reader-accessible. It lays *over* TimeWidget's own axes (bare overlay:
+its ticks/domain are hidden via CSS; its domain line lands on the axis by geometry,
+`axLine = margin + thickness/2 = 44`). TimeWidget can't yet suppress its own axes, so a full
+"the-axis-IS-the-zoom-control" integration would need a TimeWidget `showAxis:false` option (PR).
+
 Working reference: `src/timewidget-demo.md` is a native page that loads the local TimeWidget
 with public sample data (`src/data/sample-canguro.csv`) and proves the reactive chain
-(brush → input event → Framework `view()` → downstream cells). This is the migration target;
-the `index.md`/`usability*.md` pages still bridge to the hosted notebook (see below).
+(brush → input event → Framework `view()` → downstream cells). `index.md` is now fully native
+too (TimeWidget + zoomable axes + stats/distribution panels); the `usability*.md` pages are
+still stubs / may bridge to the hosted notebook.
 
 ## Observable Notebook (source reference)
 
@@ -110,3 +120,14 @@ Branch: `feat/observable-framework-migration` → merge to `main` when verified
   that release ships, we vendor the ESM build (see TimeWidget note under Development).
 - **Don't reintroduce `file:../TimeWidget`.** Framework's Rollup can't resolve the symlink, and
   the sibling repo won't exist on CI/deploy. Use the vendored `src/lib/TimeWidget.esm.js`.
+- **After `npm run sync:timewidget`, hard-reload — a hot reload lies.** Swapping
+  `src/lib/TimeWidget.esm.js` under a live dev server rebuilds the whole module graph, and the
+  page's `Generators.input(...)` cells stay bound to the *replaced* widget DOM. Result: the chart
+  renders but the reactive zoom looks broken (widget value updates, `ts.xDomain` doesn't) even
+  though `ts.setDomains()` works when called directly. A full page reload fixes it. Don't chase a
+  phantom regression here. Also: the loader output route is `/_file/data/<name>?sha=…`, not
+  `/data/<name>` — a bare `curl /data/canguro.csv` 404s even when the page loads fine.
+- **k-anonymity check must track the *released* columns.** `anonymize.js` reports k-anon over a
+  quasi-identifier tuple; when you add a released grouping column (e.g. `rciu`), add it to that
+  tuple or the report understates re-identification risk (a "registry fan-out"). The anonymized
+  CSV stays gitignored pending the Fundación's privacy sign-off.
