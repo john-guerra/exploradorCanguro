@@ -81,6 +81,19 @@ test("report includes patient/row counts and a k-anonymity violation count", () 
   assert.ok(report.kAnon.violatingPatients >= 0);
 });
 
+test("k-anonymity tuple includes the released rciu QI (fan-out reflected)", () => {
+  // Two patients identical on (sex, birthPeso, ballard) but DIFFERENT on the
+  // released rciu attribute must count as distinct quasi-identifier groups —
+  // otherwise the report hides the re-identification risk rciu adds.
+  const raw = [
+    { Code: "A", ERN_Sexo: "1", ERN_Ballard: "30", ERN_Peso: "1500", RCIUFenton: "1", ERN_Talla: "40", ERN_PC: "28", V218: "3000" },
+    { Code: "B", ERN_Sexo: "1", ERN_Ballard: "30", ERN_Peso: "1500", RCIUFenton: "0", ERN_Talla: "40", ERN_PC: "28", V218: "3000" },
+  ];
+  const { report } = buildAnonRows(raw, undefined, { k: 5 });
+  // Each patient is alone in its (sex, rciu, peso, ballard) group → both violate k=5.
+  assert.equal(report.kAnon.violatingPatients, 2);
+});
+
 test("missing wide columns are reported, not thrown", () => {
   const { missingCols } = buildAnonRows([{ Code: "X", ERN_Ballard: "30", ERN_Sexo: "1", ERN_Peso: "1500" }]);
   assert.ok(Array.isArray(missingCols));

@@ -97,7 +97,17 @@ export function buildAnonRows(rawRows, stages = STAGES, { k = 5 } = {}) {
   const tupleCount = new Map();
   const idTuple = new Map();
   for (const [id, r] of wideById) {
-    const tuple = [num(r.ERN_Sexo), Math.round((num(r.ERN_Peso) ?? 0) / 100) * 100, Math.round(num(r.ERN_Ballard) ?? 0)].join("|");
+    // Quasi-identifier tuple = the coarse attributes actually RELEASED in the
+    // output, so the report reflects real re-identification risk. rciu is a new,
+    // independent released QI (not derivable from the others) — including it makes
+    // the count conservative (splits groups finer). gaCat is a coarsening of
+    // ERN_Ballard, which is already here at finer resolution, so it is covered.
+    const tuple = [
+      num(r.ERN_Sexo),
+      rciuLabel(r),
+      Math.round((num(r.ERN_Peso) ?? 0) / 100) * 100,
+      Math.round(num(r.ERN_Ballard) ?? 0),
+    ].join("|");
     idTuple.set(id, tuple);
     tupleCount.set(tuple, (tupleCount.get(tuple) || 0) + 1);
   }
