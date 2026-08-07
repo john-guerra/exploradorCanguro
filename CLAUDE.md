@@ -73,16 +73,23 @@ Components:
 
 **Zoom axes:** `index.md` and `timewidget-demo.md` use the published
 **`@john-guerra/d3-zoomable-axis@0.0.5`** (`/input` reactive widget) for the x/y zoom handles —
-native `<input type=range>`, so keyboard- and screen-reader-accessible. The zoomable axis **is**
-the chart's visible axis: TimeWidget's own axes are suppressed via `showXAxis:false,
-showYAxis:false` (see below), and the zoomable axis draws the ticks + a scented distribution
-(gestational-age histogram on x, weight violin on y) + drag/pan handles. It's positioned by
-geometry so its domain line lands on the plot edge (`axLine = margin + thickness/2 = 44`;
-container at `left: margin.left - axLine`, etc.). CSS gives `.zoomable-axis-input` `z-index:5`
-so it sits above the chart canvas/brush.
+native `<input type=range>`, so keyboard- and screen-reader-accessible.
 
-`showXAxis`/`showYAxis` come from **TimeWidget `feat/optional-axes`** (ivelascog/TimeWidget#68,
-issue #67), currently vendored ahead of merge. When #68 merges, re-sync `src/lib` from `main`.
+**Design (learned the hard way):** the zoomable axis is a *full-extent zoom control*, NOT the
+data axis. Its scale always spans the full domain with handles marking the selected window;
+TimeWidget redraws the timelines to fill the plot with the *zoomed* range. So if the zoomable
+axis draws the ticks, they stop matching the timelines the moment you zoom (deceiving). Fix:
+**TimeWidget draws its own (zoom-aware) tick axes; the zoomable axis sits beside them** in the
+enlarged chart margins (wide left margin for the vertical weight control, tall bottom margin for
+the horizontal weeks control) as a *scented range slider* — its own ticks hidden via CSS, showing
+only a distribution (gestational-age histogram on x, weight violin on y) + drag/keyboard handles.
+Its scale is aligned to the plot's pixel range (`axLine = margin + thickness/2 = 44`) so handles
+track the axis at full extent. Placing the controls inside the margins (not below the chart)
+keeps them clear of TimeWidget's own below-chart panels (Coordinates/Groups).
+
+TimeWidget is vendored from `main` (released). A separate `showXAxis`/`showYAxis` option exists on
+**TimeWidget `feat/optional-axes`** (ivelascog/TimeWidget#68, issue #67) — NOT used here (that
+"axis-is-the-zoom-control" approach was the deceiving one); the PR stays open as a general feature.
 
 Working reference: `src/timewidget-demo.md` is a native page that loads the local TimeWidget
 with public sample data (`src/data/sample-canguro.csv`) and proves the reactive chain

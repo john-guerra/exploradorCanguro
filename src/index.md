@@ -12,8 +12,11 @@ del Programa Canguro. Usa la librería **TimeWidget** local con zoom por semanas
 > atributos en el conjunto anonimizado — pendiente de revisión de privacidad.
 
 <style>
-/* The zoomable axes ARE the chart's axes (TimeWidget's own are suppressed via
-   showXAxis/showYAxis:false), so keep them above the chart canvas + brush. */
+/* TimeWidget draws the authoritative (zoom-aware) tick axes. The zoomable axes
+   sit just OUTSIDE them as scented range sliders — full-extent zoom controls, not
+   the data axis — so hide their own ticks/domain and keep only scent + handles. */
+.zoomable-axis-input .za-axis .tick,
+.zoomable-axis-input .za-axis .domain { display: none; }
 .zoomable-axis-input { z-index: 5; }
 </style>
 
@@ -33,15 +36,18 @@ const weightExtent = d3.extent(data, (d) => d.peso);
 ```
 
 ```js
-// Chart + plot geometry, shared by the chart and the axis-aligned sliders.
-const margin = { left: 50, top: 30, right: 50, bottom: 50 };
-const chartW = Math.min(width - 80, 900);
-const chartH = 500;
+// Chart + plot geometry. TimeWidget's own (zoom-aware) tick axes stay; the zoom
+// controls sit in the ENLARGED margins beside them — the vertical weight control
+// in the wide left margin, the horizontal weeks control in the tall bottom
+// margin — above TimeWidget's own below-chart panels (Coordinates/Groups).
+const margin = { left: 118, top: 30, right: 50, bottom: 104 };
+const chartW = Math.min(width - 40, 900);
+const chartH = 520;
 const plotW = chartW - margin.left - margin.right;
 const plotH = chartH - margin.top - margin.bottom;
-// zoomable-axis geometry (its defaults): the domain line sits axLine px into the
-// widget, and the scale range starts axMargin px in. Used to land each axis
-// exactly on TimeWidget's own axis line.
+// zoomable-axis geometry (its defaults): the scale starts axMargin px into the
+// widget; the (hidden) domain line sits axLine px in. Used to align each control's
+// scale with the plot's pixel range so the handles track the axis at full extent.
 const axMargin = 22, axThick = 44, axLine = axMargin + axThick / 2; // 44
 ```
 
@@ -58,17 +64,14 @@ const tw = timeWidgetReactive(data, {
   xLabel: "Edad gestacional (semanas)",
   yLabel: "Peso (g)",
   showGroupMedian: true,
-  // The zoomable axes below ARE the visible axes — suppress TimeWidget's own.
-  showXAxis: false,
-  showYAxis: false,
 });
 tw.ts.addReferenceCurves(curvas);
 ```
 
 ```js
-// Accessible zoomable axes (native <input type=range>, keyboard + screen-reader).
-// Their own ticks/labels are hidden via CSS (see the <style> below) so they lay
-// bare over TimeWidget's existing axes; only the handles + drag band show.
+// Accessible scented zoom controls (native <input type=range>, keyboard + screen
+// reader). Ticks hidden via CSS — TimeWidget owns the tick axis; these are the
+// full-extent range sliders that sit beside it, showing the data distribution.
 const weeksSlider = zoomableAxisInput(weekExtent, {
   orient: "bottom", step: 1, length: plotW, value: weekExtent,
   label: "Edad gestacional", units: "sem",
@@ -104,14 +107,17 @@ display(html`<div style="margin:.5rem 0;">${resetBtn}</div>`);
 ```
 
 ```js
-// Overlay each zoomable axis exactly on TimeWidget's axis line. The widget's
-// domain line sits axLine px in; its scale starts axMargin px in — offset by those
-// so the handles land on the axis (see the geometry constants above).
+// TimeWidget is offset right by yBand; each zoom control sits OUTSIDE its axis:
+//  • weight (vertical) in the left band, its scale aligned to the plot's y-range;
+//  • weeks (horizontal) in the bottom band (below TimeWidget's x ticks+label),
+//    its scale aligned to the plot's x-range.
+// So the handles track the axis at full extent, but the control is clearly a
+// separate scented range slider — TimeWidget's own ticks remain the data axis.
 display(html`
-  <div style="position:relative; width:${chartW}px; height:${chartH}px;">
-    <div style="position:absolute; left:0; top:0;">${tw}</div>
-    <div style="position:absolute; left:${margin.left - axLine}px; top:${margin.top - axMargin}px;">${weightSlider}</div>
-    <div style="position:absolute; left:${margin.left - axMargin}px; top:${margin.top + plotH - axLine}px;">${weeksSlider}</div>
+  <div style="position:relative; width:${chartW}px;">
+    ${tw}
+    <div style="position:absolute; left:2px; top:${margin.top - axMargin}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left - axMargin}px; top:${chartH - 48 - axLine}px;">${weeksSlider}</div>
   </div>
 `);
 ```

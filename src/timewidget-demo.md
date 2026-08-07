@@ -14,8 +14,11 @@ Brush a time range on the chart below — the selection flows reactively into th
 cells underneath.
 
 <style>
-/* The zoomable axes ARE the chart's axes (TimeWidget's own are suppressed), so
-   keep them above the chart canvas + brush. */
+/* TimeWidget draws the authoritative (zoom-aware) tick axes; the zoomable axes
+   sit beside them in the enlarged margins as scented range sliders — hide their
+   own ticks/domain, keep scent + handles. */
+.zoomable-axis-input .za-axis .tick,
+.zoomable-axis-input .za-axis .domain { display: none; }
 .zoomable-axis-input { z-index: 5; }
 </style>
 
@@ -42,10 +45,12 @@ const weightExtent = d3.extent(data, (d) => d.peso);
 ```
 
 ```js
-// Chart + plot geometry, shared by the chart and the axis-aligned zoom axes.
-const margin = { left: 50, top: 30, right: 50, bottom: 50 };
+// Chart + plot geometry. TimeWidget's own tick axes stay; the zoom controls sit
+// in the ENLARGED margins beside them (weight in the wide left margin, weeks in
+// the tall bottom margin), above TimeWidget's own below-chart panels.
+const margin = { left: 118, top: 30, right: 50, bottom: 104 };
 const chartW = Math.min(width - 40, 900);
-const chartH = 500;
+const chartH = 520;
 const plotW = chartW - margin.left - margin.right;
 const plotH = chartH - margin.top - margin.bottom;
 // zoomable-axis geometry (its defaults): domain line sits axLine px into the widget.
@@ -67,9 +72,6 @@ const tw = timeWidgetReactive(data, {
   fmtX: (d) => `${d} sem`,
   hasDetails: false,
   showGroupMedian: true,
-  // The zoomable axes ARE the visible axes — suppress TimeWidget's own.
-  showXAxis: false,
-  showYAxis: false,
 });
 
 // Overlay the Fenton/WHO weight reference curves.
@@ -116,14 +118,14 @@ display(html`<div style="display:flex; gap:.5rem; margin:.5rem 0;">${resetBtn}${
 ```
 
 ```js
-// Overlay each zoomable axis exactly on the plot edge: the widget's domain line
-// sits axLine px in, its scale starts axMargin px in — offset by those so the
-// axis lands where TimeWidget's (now hidden) axis used to be.
+// TimeWidget keeps its own tick axes; each scented zoom control sits beside them
+// in the enlarged margins, its scale aligned to the plot's pixel range so the
+// handles track the axis at full extent (above TimeWidget's below-chart panels).
 display(html`
-  <div style="position:relative; width:${chartW}px; height:${chartH}px;">
-    <div style="position:absolute; left:0; top:0;">${tw}</div>
-    <div style="position:absolute; left:${margin.left - axLine}px; top:${margin.top - axMargin}px;">${weightSlider}</div>
-    <div style="position:absolute; left:${margin.left - axMargin}px; top:${margin.top + plotH - axLine}px;">${weeksSlider}</div>
+  <div style="position:relative; width:${chartW}px;">
+    ${tw}
+    <div style="position:absolute; left:2px; top:${margin.top - axMargin}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left - axMargin}px; top:${chartH - 48 - axLine}px;">${weeksSlider}</div>
   </div>
 `);
 ```
