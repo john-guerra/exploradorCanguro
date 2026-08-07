@@ -107,9 +107,31 @@ save as `notebooks/explorador-canguro-src.tgz`, then port individual cell JS fil
 
 ## Deployment
 
-GitHub Pages: https://john-guerra.github.io/exploradorCanguro/
 GitHub remote: `git@github.com:john-guerra/exploradorCanguro.git`
-Branch: `feat/observable-framework-migration` → merge to `main` when verified
+
+- **Legacy site (unchanged):** https://john-guerra.github.io/exploradorCanguro/ — the old
+  `index.html` notebook bridge.
+- **Framework app (new):** https://john-guerra.github.io/exploradorCanguro/new/
+
+Both are served from the **`gh-pages` branch** (Pages source = gh-pages, root): the 3 legacy
+HTML files sit at the branch root, the Framework build lives under `new/`, and a root `.nojekyll`
+stops Jekyll from stripping Framework's `_`-prefixed asset dirs.
+
+**`npm run deploy` (`observable deploy`) is DEAD** — Observable Cloud is deprecated and errors
+("No authentication provided"). Deploy manually instead (the build must run locally because the
+data loader needs the gitignored raw PII CSV — CI can't build it):
+
+```bash
+npm run build                                   # -> dist/ (relative paths; subpath-portable)
+# assemble a publish dir: legacy *.html at root, dist/* under new/, plus .nojekyll
+npx gh-pages -d <publishDir> --dotfiles -m "deploy"
+# first time only: point Pages at the branch, then force a build
+gh api -X PUT  repos/john-guerra/exploradorCanguro/pages -f 'source[branch]=gh-pages' -f 'source[path]=/'
+gh api -X POST repos/john-guerra/exploradorCanguro/pages   # a source switch does NOT auto-build
+```
+
+Gotcha: switching the Pages source does **not** trigger a rebuild — POST `/pages/builds` and poll
+`/pages/builds/latest` until `.commit` matches `gh-pages` HEAD, or it keeps serving the old build.
 
 ## Collaborators
 
