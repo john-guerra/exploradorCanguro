@@ -14,11 +14,15 @@ export function rangeSlider({
   orientation = "horizontal",
   length = 320,
   thickness = 44,
+  // End padding (px) so handles aren't clipped. Set 0 to make the track span the
+  // exact `length` (e.g. to lay it precisely over a chart axis).
+  pad = 14,
+  // Text label + value readout above the track. Pass null to render no label at
+  // all (just the track + handles), e.g. when overlaying an axis.
   label = "",
   format = (d) => `${Math.round(d)}`,
 } = {}) {
   const horizontal = orientation === "horizontal";
-  const pad = 14;
   const span = length - pad * 2;
   const cross = thickness / 2;
 
@@ -32,11 +36,14 @@ export function rangeSlider({
   const container = document.createElement("div");
   container.className = "range-slider";
 
-  const labelEl = document.createElement("div");
-  labelEl.className = "range-slider-label";
-  labelEl.style.font = "12px sans-serif";
-  labelEl.style.marginBottom = "2px";
-  container.appendChild(labelEl);
+  let labelEl = null;
+  if (label !== null) {
+    labelEl = document.createElement("div");
+    labelEl.className = "range-slider-label";
+    labelEl.style.font = "12px sans-serif";
+    labelEl.style.marginBottom = "2px";
+    container.appendChild(labelEl);
+  }
 
   const svg = d3
     .select(container)
@@ -75,7 +82,7 @@ export function rangeSlider({
     } else {
       rangeLine.attr("x1", cross).attr("y1", scale(lo)).attr("x2", cross).attr("y2", scale(hi));
     }
-    labelEl.textContent = `${label ? label + ": " : ""}${format(lo)} – ${format(hi)}`;
+    if (labelEl) labelEl.textContent = `${label ? label + ": " : ""}${format(lo)} – ${format(hi)}`;
   }
 
   const widget = ReactiveWidget(container, {
