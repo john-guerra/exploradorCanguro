@@ -11,9 +11,16 @@ del Programa Canguro. Usa la librería **TimeWidget** local con zoom por semanas
 > definición de grupos arbitrarios (G1/G2 estilo RCIU vía FacetedSearch) requiere incluir más
 > atributos en el conjunto anonimizado — pendiente de revisión de privacidad.
 
+<style>
+/* The zoomable axes lay bare over TimeWidget's own axes: hide their ticks and
+   domain line so only the draggable handles + pan band show through. */
+.zoomable-axis-input .za-axis .tick,
+.zoomable-axis-input .za-axis .domain { display: none; }
+</style>
+
 ```js
 import { timeWidgetReactive } from "./components/timeWidget.js";
-import { rangeSlider } from "./components/rangeSlider.js";
+import { zoomableAxisInput } from "@john-guerra/d3-zoomable-axis/input";
 ```
 
 ```js
@@ -33,7 +40,10 @@ const chartW = Math.min(width - 80, 900);
 const chartH = 500;
 const plotW = chartW - margin.left - margin.right;
 const plotH = chartH - margin.top - margin.bottom;
-const sliderThickness = 26;
+// zoomable-axis geometry (its defaults): the domain line sits axLine px into the
+// widget, and the scale range starts axMargin px in. Used to land each axis
+// exactly on TimeWidget's own axis line.
+const axMargin = 22, axThick = 44, axLine = axMargin + axThick / 2; // 44
 ```
 
 ```js
@@ -54,10 +64,17 @@ tw.ts.addReferenceCurves(curvas);
 ```
 
 ```js
-// Sliders sized to the exact plot area (pad:0) with no label, so the track lays
-// precisely over the chart axis line.
-const weeksSlider  = rangeSlider({ domain: weekExtent,   value: weekExtent,   orientation: "horizontal", step: 1,   length: plotW, thickness: sliderThickness, pad: 0, label: null });
-const weightSlider = rangeSlider({ domain: weightExtent, value: weightExtent, orientation: "vertical",   step: 100, length: plotH, thickness: sliderThickness, pad: 0, label: null });
+// Accessible zoomable axes (native <input type=range>, keyboard + screen-reader).
+// Their own ticks/labels are hidden via CSS (see the <style> below) so they lay
+// bare over TimeWidget's existing axes; only the handles + drag band show.
+const weeksSlider = zoomableAxisInput(weekExtent, {
+  orient: "bottom", step: 1, length: plotW, value: weekExtent,
+  label: "Semanas", units: "sem",
+});
+const weightSlider = zoomableAxisInput(weightExtent, {
+  orient: "left", step: 100, length: plotH, value: weightExtent,
+  label: "Peso", units: "g",
+});
 ```
 
 ```js
@@ -83,14 +100,14 @@ display(html`<div style="margin:.5rem 0;">${resetBtn}</div>`);
 ```
 
 ```js
-// Overlay each slider's track exactly on its axis line. The track centerline sits
-// at thickness/2 within the slider; offset by that so it lands on the axis.
-const half = sliderThickness / 2;
+// Overlay each zoomable axis exactly on TimeWidget's axis line. The widget's
+// domain line sits axLine px in; its scale starts axMargin px in — offset by those
+// so the handles land on the axis (see the geometry constants above).
 display(html`
   <div style="position:relative; width:${chartW}px; height:${chartH}px;">
     <div style="position:absolute; left:0; top:0;">${tw}</div>
-    <div style="position:absolute; left:${margin.left - half}px; top:${margin.top}px;">${weightSlider}</div>
-    <div style="position:absolute; left:${margin.left}px; top:${margin.top + plotH - half}px;">${weeksSlider}</div>
+    <div style="position:absolute; left:${margin.left - axLine}px; top:${margin.top - axMargin}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left - axMargin}px; top:${margin.top + plotH - axLine}px;">${weeksSlider}</div>
   </div>
 `);
 ```

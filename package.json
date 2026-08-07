@@ -19,6 +19,7 @@
   "author": "John Alexis Guerra Gómez",
   "license": "ISC",
   "dependencies": {
+    "@john-guerra/d3-zoomable-axis": "^0.0.5",
     "d3": "^7.9.0",
     "reactive-widget-helper": "^0.0.3"
   },
