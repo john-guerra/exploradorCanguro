@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Prueba de Usabilidad — Curva Individual | Explorador Canguro</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="modulepreload" href="./_observablehq/client.49091e0e.js">
+<link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
+<link rel="modulepreload" href="./_npm/@observablehq/runtime@5.9.9/da29311e.js">
+<link rel="modulepreload" href="https://api.observablehq.com/@john-guerra/explorador-canguro@972.js?v=4">
+<link rel="modulepreload" href="./_npm/@observablehq/inspector@5.0.1/5dcf6dae.js">
+<link rel="modulepreload" href="./_npm/@observablehq/stdlib@5.8.8/2891b558.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/18cbf477.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js">
+<link rel="modulepreload" href="./_npm/d3-require@1.3.0/3bb9fbac.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/e93ca09f.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/e08981d9.js">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script type="module">
+
+import {define} from "./_observablehq/client.49091e0e.js";
+
+define({id: "f03d6d8c", outputs: ["Runtime","Inspector","define"], body: async () => {
+const [{Runtime, Inspector}, {default: define}] = await Promise.all([import("./_npm/@observablehq/runtime@5.9.9/da29311e.js"), import("https://api.observablehq.com/@john-guerra/explorador-canguro@972.js?v=4")]);
+
+return {Runtime,Inspector,define};
+}});
+
+define({id: "5102779e", inputs: ["Runtime","define","Inspector"], outputs: ["notebook"], body: (Runtime,define,Inspector) => {
+const notebook = new Runtime().module(define, (name) => {
+  const targets = {
+    "viewof SelectedTimeId": "#observablehq-viewof-SelectedTimeId",
+    "comparisonChart": "#observablehq-comparisonChart",
+  };
+  if (targets[name]) return new Inspector(document.querySelector(targets[name]));
+  return ["G1G2", "selectedStages", "SelectedTime", "dataF"].includes(name);
+});
+
+notebook.redefine("width", document.getElementById("divChart").offsetWidth);
+return {notebook};
+}});
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Explorador Canguro</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link"><a href="./">Explorador</a></li>
+    <li class="observablehq-link"><a href="./timewidget-demo">TimeWidget (nativo)</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./usability">Prueba de Usabilidad</a></li>
+    <li class="observablehq-link"><a href="./usability-multiple">KMC Explorer</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="prueba-de-usabilidad" tabindex="-1"><a class="observablehq-header-anchor" href="#prueba-de-usabilidad">Prueba de Usabilidad</a></h1>
+<div class="observablehq observablehq--block"><!--:f03d6d8c:--></div>
+<div class="container">
+  <div class="row">
+    <div id="divChart" class="col-12">
+      <div id="observablehq-viewof-SelectedTimeId"></div>
+      <div id="observablehq-comparisonChart"></div>
+    </div>
+  </div>
+</div>
+<div class="observablehq observablehq--block"><!--:5102779e:--></div>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./timewidget-demo"><span>TimeWidget (nativo)</span></a><a rel="next" href="./usability-multiple"><span>KMC Explorer</span></a></nav>
+<div>Fundación Canguro · URJC · Northeastern University</div>
+</footer>
+</div>
+</body>
+</html>

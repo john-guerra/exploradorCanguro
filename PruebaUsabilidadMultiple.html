@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prueba Usabilidad TimeSearcher+</title>
+
+  <link
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+          rel="stylesheet"
+          integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+          crossorigin="anonymous"
+  />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+          href="https://fonts.googleapis.com/css2?family=Oswald:wght@600&family=Roboto:wght@300&display=swap"
+          rel="stylesheet"
+  />
+
+  <style>
+    h1,
+    h2,
+    h3,
+    h4 {
+      font-family: "Oswald", sans-serif;
+      font-weight: bolder;
+    }
+    div {
+      font-family: "Roboto", sans-serif;
+    }
+  </style>
+</head>
+<body>
+<div style="padding: 40px">
+  <div class="row">
+    <h1>KMC Explorer <br /></h1>
+
+  <div class="col-4">
+    <div style="border: black  solid 2px; padding: 10px">
+      <h4><b>Initial Filter</b></h4>
+      <div id ="observablehq-viewof-maxTimelines"></div>
+      <hr>
+      <div id="observablehq-viewof-attribs"></div>
+      <hr>
+      <div id="observablehq-viewof-G1"></div>
+    </div>
+    <div style="border: black  solid 2px; padding: 10px; margin-top: 10px" >
+      <h4><b>Impact Variables</b></h4>
+      <div id="observablehq-viewof-attribsImpact-67a7e2dd"></div>
+      <hr>
+      <div id="observablehq-statsCardChart-67a7e2dd"></div>
+      <div id="observablehq-violinsChart-67a7e2dd"></div>
+      <div id="observablehq-comparisonChart-67a7e2dd"></div>
+    </div>
+  </div>
+
+  <div class="col-8" id="divChart">
+    <div class="col-7">
+    <span>Please use your mouse to draw queries using TimeBoxes. Press R or Backspace to delete the selected TimeBox,
+      or the arrows to displace it. You can also select multiple TimeBoxes using shift+click to move them as a block</span>
+    </div>
+    <h2>Weight</h2>
+    <div id="observablehq-viewof-tsPeso-67a7e2dd"></div>
+    <h2>Length</h2>
+    <div id="observablehq-viewof-tsTalla-67a7e2dd"></div>
+    <h2>Craneal Perimeter</h2>
+    <div id="observablehq-viewof-tsPC-67a7e2dd"></div>
+  </div>
+  </div>
+</div>
+
+
+
+
+
+
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@observablehq/inspector@5/dist/inspector.css">
+<script type="module">
+  import {Runtime, Inspector} from "https://cdn.jsdelivr.net/npm/@observablehq/runtime@5/dist/runtime.js";
+  import define from "https://api.observablehq.com/d/3b2fb2c5c5668b08.js?v=3";
+ const notebook =  new Runtime().module(define, name => {
+    if (name === "statsCardChart") return new Inspector(document.querySelector("#observablehq-statsCardChart-67a7e2dd"));
+    if (name === "comparisonChart") return new Inspector(document.querySelector("#observablehq-comparisonChart-67a7e2dd"));
+    if (name === "violinsChart") return new Inspector(document.querySelector("#observablehq-violinsChart-67a7e2dd"));
+    if (name === "viewof attribsImpact") return new Inspector(document.querySelector("#observablehq-viewof-attribsImpact-67a7e2dd"));
+    if (name === "viewof tsPeso") return new Inspector(document.querySelector("#observablehq-viewof-tsPeso-67a7e2dd"));
+    if (name === "viewof tsTalla") return new Inspector(document.querySelector("#observablehq-viewof-tsTalla-67a7e2dd"));
+    if (name === "viewof tsPC") return new Inspector(document.querySelector("#observablehq-viewof-tsPC-67a7e2dd"));
+    if (name === "viewof G1") return new Inspector(document.querySelector("#observablehq-viewof-G1"));
+    if (name === "viewof attribs") return new Inspector(document.querySelector("#observablehq-viewof-attribs"));
+   if (name === "viewof maxTimelines") return new Inspector(document.querySelector("#observablehq-viewof-maxTimelines"));
+
+   return ["configImpact","SelectedTime"].includes(name);
+  });
+
+  notebook.redefine("width", document.querySelector("#divChart").offsetWidth - 300)
+</script>
+<script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+        crossorigin="anonymous"
+></script>
+
+</body>
+</html>

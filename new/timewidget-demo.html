@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>TimeWidget (nativo) | Explorador Canguro</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
+<link rel="modulepreload" href="./_observablehq/client.49091e0e.js">
+<link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
+<link rel="modulepreload" href="./_import/components/timeWidget.2a0e0a23.js">
+<link rel="modulepreload" href="./_node/@john-guerra/d3-zoomable-axis@0.0.5/input.31b802ac.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/66d82917.js">
+<link rel="modulepreload" href="./_npm/htl@1.0.0/87d6f6ef.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.3feeafb9.js">
+<link rel="modulepreload" href="./_import/lib/TimeWidget.esm.44bf35cc.js">
+<link rel="modulepreload" href="./_node/reactive-widget-helper@0.0.3/index.cad252d0.js">
+<link rel="modulepreload" href="./_node/d3@7.9.0/index.ca4e4e1f.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/18cbf477.js">
+<link rel="modulepreload" href="./_node/d3-selection@3.0.0/index.13204b25.js">
+<link rel="modulepreload" href="./_node/d3-scale@4.0.2/index.d84d3d65.js">
+<link rel="modulepreload" href="./_node/d3-axis@3.0.0/index.34ded868.js">
+<link rel="modulepreload" href="./_node/d3-dispatch@3.0.1/index.be49ca5f.js">
+<link rel="modulepreload" href="./_node/d3-shape@3.2.0/index.d124f030.js">
+<link rel="modulepreload" href="./_node/fast-kde@0.2.2/index.5275d247.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/e93ca09f.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/0f2de24d.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/65eb105b.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/7ef8fb2e.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/aeb57b94.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/1d2aed74.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/87adea64.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/9ba9c7f3.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/4202580c.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/cdd7e898.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/b4e2ad9a.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/5e804d15.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.2/3785bf2d.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/40599fb3.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/e49e792c.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/8d1e5425.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/20d3f133.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/7553081f.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/0dfd751c.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/3c90ee06.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/720b7f0a.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/ba24c2e7.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/4d94e5b7.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/6d3a6726.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/9f03c579.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/07c9626f.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/b58a267d.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/004da2ac.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/b5786b3f.js">
+<link rel="modulepreload" href="./_node/d3-array@3.2.4/index.bdb0a72c.js">
+<link rel="modulepreload" href="./_node/d3-brush@3.0.0/index.2a46d490.js">
+<link rel="modulepreload" href="./_node/d3-chord@3.0.1/index.eb7a3f59.js">
+<link rel="modulepreload" href="./_node/d3-color@3.1.0/index.e8c126ff.js">
+<link rel="modulepreload" href="./_node/d3-contour@4.0.2/index.d20458c0.js">
+<link rel="modulepreload" href="./_node/d3-delaunay@6.0.4/index.d22bdd7b.js">
+<link rel="modulepreload" href="./_node/d3-drag@3.0.0/index.d3ae5f0f.js">
+<link rel="modulepreload" href="./_node/d3-dsv@3.0.1/index.48418e2e.js">
+<link rel="modulepreload" href="./_node/d3-ease@3.0.1/index.f721fe69.js">
+<link rel="modulepreload" href="./_node/d3-fetch@3.0.1/index.a14b8fa2.js">
+<link rel="modulepreload" href="./_node/d3-force@3.0.0/index.952bd793.js">
+<link rel="modulepreload" href="./_node/d3-format@3.1.2/index.462d0a06.js">
+<link rel="modulepreload" href="./_node/d3-geo@3.1.1/index.ed340730.js">
+<link rel="modulepreload" href="./_node/d3-hierarchy@3.1.2/index.aa2fa671.js">
+<link rel="modulepreload" href="./_node/d3-interpolate@3.0.1/index.e11d2315.js">
+<link rel="modulepreload" href="./_node/d3-path@3.1.0/index.c2b3c473.js">
+<link rel="modulepreload" href="./_node/d3-polygon@3.0.1/index.32c3d834.js">
+<link rel="modulepreload" href="./_node/d3-quadtree@3.0.1/index.e9fed2eb.js">
+<link rel="modulepreload" href="./_node/d3-random@3.0.1/index.0f51cac2.js">
+<link rel="modulepreload" href="./_node/d3-scale-chromatic@3.1.0/index.28c209c1.js">
+<link rel="modulepreload" href="./_node/d3-time@3.1.0/index.5e76e4f2.js">
+<link rel="modulepreload" href="./_node/d3-time-format@4.1.0/index.1cef6c56.js">
+<link rel="modulepreload" href="./_node/d3-timer@3.0.1/index.0ee6092b.js">
+<link rel="modulepreload" href="./_node/d3-transition@3.0.1/index.3725eff8.js">
+<link rel="modulepreload" href="./_node/d3-zoom@3.0.0/index.b6a6a5f8.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/e08981d9.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.1.0/d4ec0aa1.js">
+<link rel="modulepreload" href="./_node/internmap@2.0.3/index.4106013c.js">
+<link rel="modulepreload" href="./_node/delaunator@5.1.0/index.612904e6.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.3/42820bfa.js">
+<link rel="modulepreload" href="./_node/robust-predicates@3.0.3/index.a9a3e887.js">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script type="module">
+
+import {define} from "./_observablehq/client.49091e0e.js";
+import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
+
+registerFile("./data/curvasPeso.json", {"name":"./data/curvasPeso.json","mimeType":"application/json","path":"./_file/data/curvasPeso.2895dde2.json","lastModified":1781793123762,"size":20675});
+registerFile("./data/sample-canguro.csv", {"name":"./data/sample-canguro.csv","mimeType":"text/csv","path":"./_file/data/sample-canguro.2f22adf6.csv","lastModified":1781793123760,"size":3000800});
+
+define({id: "18ec72c0", outputs: ["timeWidgetReactive","zoomableAxisInput"], body: async () => {
+const [{timeWidgetReactive}, {zoomableAxisInput}] = await Promise.all([import("./_import/components/timeWidget.2a0e0a23.js"), import("./_node/@john-guerra/d3-zoomable-axis@0.0.5/input.31b802ac.js")]);
+
+return {timeWidgetReactive,zoomableAxisInput};
+}});
+
+define({id: "c4862bc0", inputs: ["FileAttachment"], outputs: ["raw","curvasPeso"], body: async (FileAttachment) => {
+// Public sample of aligned Kangaroo data shipped with TimeWidget.
+// Columns: Code, __stageName, __stageId, __time, ERN_Sexo, peso, talla, PC
+const raw = await FileAttachment("./data/sample-canguro.csv").csv({typed: true});
+const curvasPeso = await FileAttachment("./data/curvasPeso.json").json();
+return {raw,curvasPeso};
+}});
+
+define({id: "ca19e11c", inputs: ["raw"], outputs: ["data"], body: (raw) => {
+// Keep rows with a valid weight and gestational time.
+const data = raw.filter((d) => d.peso != null && d.__time != null);
+return {data};
+}});
+
+define({id: "7107ab42", inputs: ["d3","data"], outputs: ["weekExtent","weightExtent"], body: (d3,data) => {
+const weekExtent   = d3.extent(data, (d) => d.__time);
+const weightExtent = d3.extent(data, (d) => d.peso);
+return {weekExtent,weightExtent};
+}});
+
+define({id: "02a45524", inputs: ["width"], outputs: ["margin","chartW","chartH","plotW","plotH","axMargin","axThick","axLine"], body: (width) => {
+// Chart + plot geometry. TimeWidget's own tick axes stay; the zoom controls sit
+// in the ENLARGED margins beside them (weight in the wide left margin, weeks in
+// the tall bottom margin), above TimeWidget's own below-chart panels.
+const margin = { left: 118, top: 30, right: 50, bottom: 104 };
+const chartW = Math.min(width - 40, 900);
+const chartH = 520;
+const plotW = chartW - margin.left - margin.right;
+const plotH = chartH - margin.top - margin.bottom;
+// zoomable-axis geometry (its defaults): domain line sits axLine px into the widget.
+const axMargin = 22, axThick = 44, axLine = axMargin + axThick / 2; // 44
+return {margin,chartW,chartH,plotW,plotH,axMargin,axThick,axLine};
+}});
+
+define({id: "9393be06", inputs: ["timeWidgetReactive","data","chartW","chartH","margin","curvasPeso"], outputs: ["tw"], body: (timeWidgetReactive,data,chartW,chartH,margin,curvasPeso) => {
+const tw = timeWidgetReactive(data, {
+  x: "__time",
+  y: "peso",
+  id: "Code",
+  groupAttr: "ERN_Sexo",
+  renderer: "canvas",
+  width: chartW,
+  height: chartH,
+  margin,
+  xLabel: "Edad gestacional (semanas)",
+  yLabel: "Peso (g)",
+  fmtX: (d) => `${d} sem`,
+  hasDetails: false,
+  showGroupMedian: true,
+});
+
+// Overlay the Fenton/WHO weight reference curves.
+tw.ts.addReferenceCurves(curvasPeso);
+return {tw};
+}});
+
+define({id: "00535fa2", inputs: ["zoomableAxisInput","weekExtent","plotW","data","weightExtent","plotH"], outputs: ["weeksSlider","weightSlider"], body: (zoomableAxisInput,weekExtent,plotW,data,weightExtent,plotH) => {
+const weeksSlider = zoomableAxisInput(weekExtent, {
+  orient: "bottom", step: 1, length: plotW, value: weekExtent,
+  label: "Edad gestacional", units: "sem",
+  scent: { values: data.map((d) => d.__time), type: "histogram", bins: 40 },
+});
+const weightSlider = zoomableAxisInput(weightExtent, {
+  orient: "left", step: 100, length: plotH, value: weightExtent,
+  label: "Peso", units: "g",
+  scent: { values: data.map((d) => d.peso), type: "violin", bins: 40 },
+});
+return {weeksSlider,weightSlider};
+}});
+
+define({id: "10cd46de", inputs: ["Generators","weeksSlider"], outputs: ["weeks"], body: (Generators,weeksSlider) => {
+const weeks  = Generators.input(weeksSlider);
+return {weeks};
+}});
+
+define({id: "b0b6d8bb", inputs: ["Generators","weightSlider"], outputs: ["weight"], body: (Generators,weightSlider) => {
+const weight = Generators.input(weightSlider);
+return {weight};
+}});
+
+define({id: "2ee93910", inputs: ["tw","weeks","weight"], body: (tw,weeks,weight) => {
+// Re-zoom whenever a slider changes; brush selections persist (ts.update reapplies them).
+tw.ts.setDomains({ x: weeks, y: weight });
+}});
+
+define({id: "437493e7", inputs: ["html","weeksSlider","tw","weightSlider","display"], outputs: ["resetBtn","dupBtn"], body: (html,weeksSlider,tw,weightSlider,display) => {
+const resetBtn = html`<button class="btn btn-sm btn-outline-secondary">Reset zoom</button>`;
+resetBtn.onclick = () => {
+  weeksSlider.setValue(tw.ts.fullExtent.x);
+  weightSlider.setValue(tw.ts.fullExtent.y);
+};
+
+const dupBtn = html`<button class="btn btn-sm btn-outline-primary">Duplicar grupo</button>`;
+dupBtn.onclick = () => tw.ts.duplicateSelectedGroup();
+
+display(html`<div style="display:flex; gap:.5rem; margin:.5rem 0;">${resetBtn}${dupBtn}</div>`);
+return {resetBtn,dupBtn};
+}});
+
+define({id: "58b1ad63", inputs: ["display","html","chartW","tw","margin","axMargin","weightSlider","chartH","axLine","weeksSlider"], body: (display,html,chartW,tw,margin,axMargin,weightSlider,chartH,axLine,weeksSlider) => {
+// TimeWidget keeps its own tick axes; each scented zoom control sits beside them
+// in the enlarged margins, its scale aligned to the plot's pixel range so the
+// handles track the axis at full extent (above TimeWidget's below-chart panels).
+display(html`
+  <div style="position:relative; width:${chartW}px;">
+    ${tw}
+    <div style="position:absolute; left:2px; top:${margin.top - axMargin}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left - axMargin}px; top:${chartH - 48 - axLine}px;">${weeksSlider}</div>
+  </div>
+`);
+}});
+
+define({id: "d4906732", inputs: ["Generators","tw"], outputs: ["selected"], body: (Generators,tw) => {
+const selected = Generators.input(tw);
+return {selected};
+}});
+
+define({id: "4de1b4c5", inputs: ["selected"], outputs: ["totalSelected"], body: (selected) => {
+// Reactive readout of the current brush selection.
+const totalSelected = selected.reduce((acc, g) => acc + (g.data?.length ?? 0), 0);
+return {totalSelected};
+}});
+
+define({id: "1efbbe24", mode: "inline", inputs: ["selected","html","totalSelected","display"], body: async (selected,html,totalSelected,display) => {
+display(await(
+selected.length === 0
+    ? html`<p>Dibuja un rango en la gráfica para seleccionar trayectorias.</p>`
+    : html`<p><strong>${selected.length}</strong> grupo(s),
+        <strong>${totalSelected}</strong> observaciones seleccionadas.</p>`
+))
+}});
+
+define({id: "45fce986", inputs: ["display","Inputs","selected"], body: (display,Inputs,selected) => {
+display(
+  Inputs.table(
+    selected.flatMap((g, i) =>
+      (g.data ?? []).slice(0, 5).map((d) => ({grupo: i, ...d}))
+    )
+  )
+);
+}});
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link"><a href="./">Explorador Canguro</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link"><a href="./">Explorador</a></li>
+    <li class="observablehq-link observablehq-link-active"><a href="./timewidget-demo">TimeWidget (nativo)</a></li>
+    <li class="observablehq-link"><a href="./usability">Prueba de Usabilidad</a></li>
+    <li class="observablehq-link"><a href="./usability-multiple">KMC Explorer</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="time-widget-integracion-nativa" tabindex="-1"><a class="observablehq-header-anchor" href="#time-widget-integracion-nativa">TimeWidget — integración nativa</a></h1>
+<p>This page is the <strong>target architecture</strong> for the migration: it uses the local
+<a href="https://github.com/john-guerra/TimeWidget" target="_blank" rel="noopener noreferrer"><code>time-widget</code></a> library directly
+(via <code>file:../TimeWidget</code>), wrapped as a reactive widget with
+<a href="https://johnguerra.co/reactiveWidgets" target="_blank" rel="noopener noreferrer"><code>reactive-widget-helper</code></a>. No hosted
+Observable notebook, no <code>localhost:8080</code> dependency.</p>
+<p>Brush a time range on the chart below — the selection flows reactively into the
+cells underneath.</p>
+<style>
+/* TimeWidget draws the authoritative (zoom-aware) tick axes; the zoomable axes
+   sit beside them in the enlarged margins as scented range sliders — hide their
+   own ticks/domain, keep scent + handles. */
+.zoomable-axis-input .za-axis .tick,
+.zoomable-axis-input .za-axis .domain { display: none; }
+.zoomable-axis-input { z-index: 5; }
+</style>
+<div class="observablehq observablehq--block"><!--:18ec72c0:--></div>
+<div class="observablehq observablehq--block"><!--:c4862bc0:--></div>
+<div class="observablehq observablehq--block"><!--:ca19e11c:--></div>
+<div class="observablehq observablehq--block"><!--:7107ab42:--></div>
+<div class="observablehq observablehq--block"><!--:02a45524:--></div>
+<div class="observablehq observablehq--block"><!--:9393be06:--></div>
+<div class="observablehq observablehq--block"><!--:00535fa2:--></div>
+<div class="observablehq observablehq--block"><!--:10cd46de:--></div>
+<div class="observablehq observablehq--block"><!--:b0b6d8bb:--></div>
+<div class="observablehq observablehq--block"><!--:2ee93910:--></div>
+<div class="observablehq observablehq--block"><!--:437493e7:--></div>
+<div class="observablehq observablehq--block"><!--:58b1ad63:--></div>
+<div class="observablehq observablehq--block"><!--:d4906732:--></div>
+<div class="observablehq observablehq--block"><!--:4de1b4c5:--></div>
+<div class="card">
+  <h2>Selección actual</h2>
+  <observablehq-loading></observablehq-loading><!--:1efbbe24:-->
+</div>
+<div class="observablehq observablehq--block"><!--:45fce986:--></div>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="prev" href="./"><span>Explorador Canguro</span></a><a rel="next" href="./usability"><span>Prueba de Usabilidad</span></a></nav>
+<div>Fundación Canguro · URJC · Northeastern University</div>
+</footer>
+</div>
+</body>
+</html>

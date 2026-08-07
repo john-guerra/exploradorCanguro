@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="generator" content="Observable Framework v1.13.4">
+<title>Explorador Canguro</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="preload" as="style" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="preload" as="style" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
+<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,200..900;1,8..60,200..900&amp;display=swap" crossorigin>
+<link rel="stylesheet" type="text/css" href="./_observablehq/theme-air.d5b7fcbe.css">
+<link rel="stylesheet" type="text/css" href="./_observablehq/stdlib/inputs.f7bf0e12.css">
+<link rel="modulepreload" href="./_observablehq/client.49091e0e.js">
+<link rel="modulepreload" href="./_observablehq/runtime.607a8173.js">
+<link rel="modulepreload" href="./_observablehq/stdlib.277aeab8.js">
+<link rel="modulepreload" href="./_import/components/timeWidget.2a0e0a23.js">
+<link rel="modulepreload" href="./_node/@john-guerra/d3-zoomable-axis@0.0.5/input.31b802ac.js">
+<link rel="modulepreload" href="./_npm/d3@7.9.0/66d82917.js">
+<link rel="modulepreload" href="./_npm/htl@1.0.0/87d6f6ef.js">
+<link rel="modulepreload" href="./_observablehq/stdlib/inputs.3feeafb9.js">
+<link rel="modulepreload" href="./_npm/@observablehq/plot@0.6.17/a96a6bbb.js">
+<link rel="modulepreload" href="./_import/lib/TimeWidget.esm.44bf35cc.js">
+<link rel="modulepreload" href="./_node/reactive-widget-helper@0.0.3/index.cad252d0.js">
+<link rel="modulepreload" href="./_node/d3@7.9.0/index.ca4e4e1f.js">
+<link rel="modulepreload" href="./_npm/d3-dsv@3.0.1/9cffc2bd.js">
+<link rel="modulepreload" href="./_npm/isoformat@0.2.1/18cbf477.js">
+<link rel="modulepreload" href="./_node/d3-selection@3.0.0/index.13204b25.js">
+<link rel="modulepreload" href="./_node/d3-scale@4.0.2/index.d84d3d65.js">
+<link rel="modulepreload" href="./_node/d3-axis@3.0.0/index.34ded868.js">
+<link rel="modulepreload" href="./_node/d3-dispatch@3.0.1/index.be49ca5f.js">
+<link rel="modulepreload" href="./_node/d3-shape@3.2.0/index.d124f030.js">
+<link rel="modulepreload" href="./_node/fast-kde@0.2.2/index.5275d247.js">
+<link rel="modulepreload" href="./_npm/d3-array@3.2.4/e93ca09f.js">
+<link rel="modulepreload" href="./_npm/d3-axis@3.0.0/0f2de24d.js">
+<link rel="modulepreload" href="./_npm/d3-brush@3.0.0/65eb105b.js">
+<link rel="modulepreload" href="./_npm/d3-chord@3.0.1/7ef8fb2e.js">
+<link rel="modulepreload" href="./_npm/d3-color@3.1.0/aeb57b94.js">
+<link rel="modulepreload" href="./_npm/d3-contour@4.0.2/1d2aed74.js">
+<link rel="modulepreload" href="./_npm/d3-delaunay@6.0.4/87adea64.js">
+<link rel="modulepreload" href="./_npm/d3-dispatch@3.0.1/9ba9c7f3.js">
+<link rel="modulepreload" href="./_npm/d3-drag@3.0.0/4202580c.js">
+<link rel="modulepreload" href="./_npm/d3-ease@3.0.1/cdd7e898.js">
+<link rel="modulepreload" href="./_npm/d3-fetch@3.0.1/b4e2ad9a.js">
+<link rel="modulepreload" href="./_npm/d3-force@3.0.0/5e804d15.js">
+<link rel="modulepreload" href="./_npm/d3-format@3.1.2/3785bf2d.js">
+<link rel="modulepreload" href="./_npm/d3-geo@3.1.1/40599fb3.js">
+<link rel="modulepreload" href="./_npm/d3-hierarchy@3.1.2/e49e792c.js">
+<link rel="modulepreload" href="./_npm/d3-interpolate@3.0.1/8d1e5425.js">
+<link rel="modulepreload" href="./_npm/d3-path@3.1.0/20d3f133.js">
+<link rel="modulepreload" href="./_npm/d3-polygon@3.0.1/7553081f.js">
+<link rel="modulepreload" href="./_npm/d3-quadtree@3.0.1/0dfd751c.js">
+<link rel="modulepreload" href="./_npm/d3-random@3.0.1/3c90ee06.js">
+<link rel="modulepreload" href="./_npm/d3-scale@4.0.2/720b7f0a.js">
+<link rel="modulepreload" href="./_npm/d3-scale-chromatic@3.1.0/ba24c2e7.js">
+<link rel="modulepreload" href="./_npm/d3-selection@3.0.0/4d94e5b7.js">
+<link rel="modulepreload" href="./_npm/d3-shape@3.2.0/6d3a6726.js">
+<link rel="modulepreload" href="./_npm/d3-time@3.1.0/9f03c579.js">
+<link rel="modulepreload" href="./_npm/d3-time-format@4.1.0/07c9626f.js">
+<link rel="modulepreload" href="./_npm/d3-timer@3.0.1/b58a267d.js">
+<link rel="modulepreload" href="./_npm/d3-transition@3.0.1/004da2ac.js">
+<link rel="modulepreload" href="./_npm/d3-zoom@3.0.0/b5786b3f.js">
+<link rel="modulepreload" href="./_npm/interval-tree-1d@1.0.4/53fe8176.js">
+<link rel="modulepreload" href="./_node/d3-array@3.2.4/index.bdb0a72c.js">
+<link rel="modulepreload" href="./_node/d3-brush@3.0.0/index.2a46d490.js">
+<link rel="modulepreload" href="./_node/d3-chord@3.0.1/index.eb7a3f59.js">
+<link rel="modulepreload" href="./_node/d3-color@3.1.0/index.e8c126ff.js">
+<link rel="modulepreload" href="./_node/d3-contour@4.0.2/index.d20458c0.js">
+<link rel="modulepreload" href="./_node/d3-delaunay@6.0.4/index.d22bdd7b.js">
+<link rel="modulepreload" href="./_node/d3-drag@3.0.0/index.d3ae5f0f.js">
+<link rel="modulepreload" href="./_node/d3-dsv@3.0.1/index.48418e2e.js">
+<link rel="modulepreload" href="./_node/d3-ease@3.0.1/index.f721fe69.js">
+<link rel="modulepreload" href="./_node/d3-fetch@3.0.1/index.a14b8fa2.js">
+<link rel="modulepreload" href="./_node/d3-force@3.0.0/index.952bd793.js">
+<link rel="modulepreload" href="./_node/d3-format@3.1.2/index.462d0a06.js">
+<link rel="modulepreload" href="./_node/d3-geo@3.1.1/index.ed340730.js">
+<link rel="modulepreload" href="./_node/d3-hierarchy@3.1.2/index.aa2fa671.js">
+<link rel="modulepreload" href="./_node/d3-interpolate@3.0.1/index.e11d2315.js">
+<link rel="modulepreload" href="./_node/d3-path@3.1.0/index.c2b3c473.js">
+<link rel="modulepreload" href="./_node/d3-polygon@3.0.1/index.32c3d834.js">
+<link rel="modulepreload" href="./_node/d3-quadtree@3.0.1/index.e9fed2eb.js">
+<link rel="modulepreload" href="./_node/d3-random@3.0.1/index.0f51cac2.js">
+<link rel="modulepreload" href="./_node/d3-scale-chromatic@3.1.0/index.28c209c1.js">
+<link rel="modulepreload" href="./_node/d3-time@3.1.0/index.5e76e4f2.js">
+<link rel="modulepreload" href="./_node/d3-time-format@4.1.0/index.1cef6c56.js">
+<link rel="modulepreload" href="./_node/d3-timer@3.0.1/index.0ee6092b.js">
+<link rel="modulepreload" href="./_node/d3-transition@3.0.1/index.3725eff8.js">
+<link rel="modulepreload" href="./_node/d3-zoom@3.0.0/index.b6a6a5f8.js">
+<link rel="modulepreload" href="./_npm/internmap@2.0.3/e08981d9.js">
+<link rel="modulepreload" href="./_npm/delaunator@5.1.0/d4ec0aa1.js">
+<link rel="modulepreload" href="./_npm/binary-search-bounds@2.0.5/cbf6ba23.js">
+<link rel="modulepreload" href="./_node/internmap@2.0.3/index.4106013c.js">
+<link rel="modulepreload" href="./_node/delaunator@5.1.0/index.612904e6.js">
+<link rel="modulepreload" href="./_npm/robust-predicates@3.0.3/42820bfa.js">
+<link rel="modulepreload" href="./_node/robust-predicates@3.0.3/index.a9a3e887.js">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+<script type="module">
+
+import {define} from "./_observablehq/client.49091e0e.js";
+import {registerFile} from "./_observablehq/stdlib.277aeab8.js";
+
+registerFile("./data/canguro.csv", {"name":"./data/canguro.csv","mimeType":"text/csv","path":"./_file/data/canguro.b2f1c2f9.csv","lastModified":1786128076890,"size":13102085});
+registerFile("./data/curvas.json", {"name":"./data/curvas.json","mimeType":"application/json","path":"./_file/data/curvas.69786c26.json","lastModified":1781792504821,"size":6801});
+
+define({id: "f8530f72", outputs: ["timeWidgetReactive","zoomableAxisInput"], body: async () => {
+const [{timeWidgetReactive}, {zoomableAxisInput}] = await Promise.all([import("./_import/components/timeWidget.2a0e0a23.js"), import("./_node/@john-guerra/d3-zoomable-axis@0.0.5/input.31b802ac.js")]);
+
+return {timeWidgetReactive,zoomableAxisInput};
+}});
+
+define({id: "ae44e100", inputs: ["FileAttachment"], outputs: ["data","curvas"], body: async (FileAttachment) => {
+const data = await FileAttachment("./data/canguro.csv").csv({ typed: true });
+const curvas = await FileAttachment("./data/curvas.json").json();
+return {data,curvas};
+}});
+
+define({id: "7107ab42", inputs: ["d3","data"], outputs: ["weekExtent","weightExtent"], body: (d3,data) => {
+const weekExtent   = d3.extent(data, (d) => d.__time);
+const weightExtent = d3.extent(data, (d) => d.peso);
+return {weekExtent,weightExtent};
+}});
+
+define({id: "f803839e", inputs: ["width"], outputs: ["margin","chartW","chartH","plotW","plotH","axMargin","axThick","axLine"], body: (width) => {
+// Chart + plot geometry. TimeWidget's own (zoom-aware) tick axes stay; the zoom
+// controls sit in the ENLARGED margins beside them — the vertical weight control
+// in the wide left margin, the horizontal weeks control in the tall bottom
+// margin — above TimeWidget's own below-chart panels (Coordinates/Groups).
+const margin = { left: 118, top: 30, right: 50, bottom: 104 };
+const chartW = Math.min(width - 40, 900);
+const chartH = 520;
+const plotW = chartW - margin.left - margin.right;
+const plotH = chartH - margin.top - margin.bottom;
+// zoomable-axis geometry (its defaults): the scale starts axMargin px into the
+// widget; the (hidden) domain line sits axLine px in. Used to align each control's
+// scale with the plot's pixel range so the handles track the axis at full extent.
+const axMargin = 22, axThick = 44, axLine = axMargin + axThick / 2; // 44
+return {margin,chartW,chartH,plotW,plotH,axMargin,axThick,axLine};
+}});
+
+define({id: "57be92f9", inputs: ["timeWidgetReactive","data","chartW","chartH","margin","curvas"], outputs: ["tw"], body: (timeWidgetReactive,data,chartW,chartH,margin,curvas) => {
+const tw = timeWidgetReactive(data, {
+  x: "__time",
+  y: "peso",
+  id: "id",
+  groupAttr: "sex",
+  renderer: "canvas",
+  width: chartW,
+  height: chartH,
+  margin,
+  xLabel: "Edad gestacional (semanas)",
+  yLabel: "Peso (g)",
+  showGroupMedian: true,
+});
+tw.ts.addReferenceCurves(curvas);
+return {tw};
+}});
+
+define({id: "6af70935", inputs: ["zoomableAxisInput","weekExtent","plotW","data","weightExtent","plotH"], outputs: ["weeksSlider","weightSlider"], body: (zoomableAxisInput,weekExtent,plotW,data,weightExtent,plotH) => {
+// Accessible scented zoom controls (native <input type=range>, keyboard + screen
+// reader). Ticks hidden via CSS — TimeWidget owns the tick axis; these are the
+// full-extent range sliders that sit beside it, showing the data distribution.
+const weeksSlider = zoomableAxisInput(weekExtent, {
+  orient: "bottom", step: 1, length: plotW, value: weekExtent,
+  label: "Edad gestacional", units: "sem",
+  scent: { values: data.map((d) => d.__time), type: "histogram", bins: 40 },
+});
+const weightSlider = zoomableAxisInput(weightExtent, {
+  orient: "left", step: 100, length: plotH, value: weightExtent,
+  label: "Peso", units: "g",
+  scent: { values: data.map((d) => d.peso), type: "violin", bins: 40 },
+});
+return {weeksSlider,weightSlider};
+}});
+
+define({id: "10cd46de", inputs: ["Generators","weeksSlider"], outputs: ["weeks"], body: (Generators,weeksSlider) => {
+const weeks  = Generators.input(weeksSlider);
+return {weeks};
+}});
+
+define({id: "b0b6d8bb", inputs: ["Generators","weightSlider"], outputs: ["weight"], body: (Generators,weightSlider) => {
+const weight = Generators.input(weightSlider);
+return {weight};
+}});
+
+define({id: "332e281c", inputs: ["tw","weeks","weight"], body: (tw,weeks,weight) => {
+// Re-zoom whenever a slider changes; brush selections persist.
+tw.ts.setDomains({ x: weeks, y: weight });
+}});
+
+define({id: "4840195d", inputs: ["html","weeksSlider","tw","weightSlider","display"], outputs: ["resetBtn"], body: (html,weeksSlider,tw,weightSlider,display) => {
+const resetBtn = html`<button class="btn btn-sm btn-outline-secondary">Reset zoom</button>`;
+resetBtn.onclick = () => {
+  weeksSlider.setValue(tw.ts.fullExtent.x);
+  weightSlider.setValue(tw.ts.fullExtent.y);
+};
+display(html`<div style="margin:.5rem 0;">${resetBtn}</div>`);
+return {resetBtn};
+}});
+
+define({id: "28fc6faf", inputs: ["display","html","chartW","tw","margin","axMargin","weightSlider","chartH","axLine","weeksSlider"], body: (display,html,chartW,tw,margin,axMargin,weightSlider,chartH,axLine,weeksSlider) => {
+// TimeWidget is offset right by yBand; each zoom control sits OUTSIDE its axis:
+//  • weight (vertical) in the left band, its scale aligned to the plot's y-range;
+//  • weeks (horizontal) in the bottom band (below TimeWidget's x ticks+label),
+//    its scale aligned to the plot's x-range.
+// So the handles track the axis at full extent, but the control is clearly a
+// separate scented range slider — TimeWidget's own ticks remain the data axis.
+display(html`
+  <div style="position:relative; width:${chartW}px;">
+    ${tw}
+    <div style="position:absolute; left:2px; top:${margin.top - axMargin}px;">${weightSlider}</div>
+    <div style="position:absolute; left:${margin.left - axMargin}px; top:${chartH - 48 - axLine}px;">${weeksSlider}</div>
+  </div>
+`);
+}});
+
+define({id: "d4906732", inputs: ["Generators","tw"], outputs: ["selected"], body: (Generators,tw) => {
+const selected = Generators.input(tw);
+return {selected};
+}});
+
+define({id: "3a11892f", inputs: ["view","Inputs"], outputs: ["metric"], body: (view,Inputs) => {
+const metric = view(Inputs.select(
+  new Map([["Peso (g)", "peso"], ["Talla (mm)", "talla"], ["Perímetro cefálico (mm)", "PC"]]),
+  { label: "Métrica", value: "peso" }
+));
+return {metric};
+}});
+
+define({id: "c512b98f", inputs: ["selected","data"], outputs: ["selectedPoints","sexLabel"], body: (selected,data) => {
+// Points inside the current brush selection; fall back to all data before any brush.
+const selectedPoints = (() => {
+  const pts = (Array.isArray(selected) ? selected : []).flatMap((g) => g?.data || []);
+  return pts.length ? pts : data;
+})();
+const sexLabel = (s) => (s === 1 ? "Masculino" : s === 2 ? "Femenino" : "Otro");
+return {selectedPoints,sexLabel};
+}});
+
+define({id: "597aa45f", inputs: ["d3","selectedPoints","metric"], outputs: ["statsBySex"], body: (d3,selectedPoints,metric) => {
+// summary stats per sex for the chosen metric over the selection
+const statsBySex = d3
+  .rollups(
+    selectedPoints.filter((d) => d[metric] != null),
+    (v) => ({ n: v.length, mean: d3.mean(v, (d) => d[metric]), median: d3.median(v, (d) => d[metric]), sd: d3.deviation(v, (d) => d[metric]) }),
+    (d) => d.sex
+  )
+  .sort((a, b) => d3.ascending(a[0], b[0]));
+return {statsBySex};
+}});
+
+define({id: "b8b4e9ce", mode: "inline", inputs: ["metric","display"], body: async (metric,display) => {
+display(await(
+metric
+))
+}});
+
+define({id: "d1af7da4", mode: "inline", inputs: ["Inputs","statsBySex","sexLabel","display"], body: async (Inputs,statsBySex,sexLabel,display) => {
+display(await(
+Inputs.table(
+      statsBySex.map(([sex, s]) => ({
+        Grupo: sexLabel(sex), n: s.n,
+        Media: s.mean != null ? s.mean.toFixed(1) : "—",
+        Mediana: s.median != null ? s.median.toFixed(1) : "—",
+        "Desv.": s.sd != null ? s.sd.toFixed(1) : "—",
+      })),
+      { header: { Grupo: "Grupo", n: "n", Media: "Media", Mediana: "Mediana", "Desv.": "Desv. est." } }
+    )
+))
+}});
+
+define({id: "b8b4e9ce-1", mode: "inline", inputs: ["metric","display"], body: async (metric,display) => {
+display(await(
+metric
+))
+}});
+
+define({id: "61350017", mode: "inline", inputs: ["Plot","metric","selectedPoints","sexLabel","display"], body: async (Plot,metric,selectedPoints,sexLabel,display) => {
+display(await(
+Plot.plot({
+      height: 280,
+      marginLeft: 60,
+      x: { label: "Sexo" },
+      y: { label: metric, grid: true },
+      color: { legend: false },
+      marks: [
+        Plot.boxY(selectedPoints.filter((d) => d[metric] != null), {
+          x: (d) => sexLabel(d.sex), y: metric, fill: (d) => sexLabel(d.sex), fillOpacity: 0.3,
+        }),
+      ],
+    })
+))
+}});
+
+</script>
+</head>
+<body>
+<input id="observablehq-sidebar-toggle" type="checkbox" title="Toggle sidebar">
+<label id="observablehq-sidebar-backdrop" for="observablehq-sidebar-toggle"></label>
+<nav id="observablehq-sidebar">
+  <ol>
+    <label id="observablehq-sidebar-close" for="observablehq-sidebar-toggle"></label>
+    <li class="observablehq-link observablehq-link-active"><a href="./">Explorador Canguro</a></li>
+  </ol>
+  <ol>
+    <li class="observablehq-link observablehq-link-active"><a href="./">Explorador</a></li>
+    <li class="observablehq-link"><a href="./timewidget-demo">TimeWidget (nativo)</a></li>
+    <li class="observablehq-link"><a href="./usability">Prueba de Usabilidad</a></li>
+    <li class="observablehq-link"><a href="./usability-multiple">KMC Explorer</a></li>
+  </ol>
+</nav>
+<script>{const e=document.querySelector("#observablehq-sidebar"),o=document.querySelector("#observablehq-sidebar-toggle"),r=sessionStorage.getItem("observablehq-sidebar");r?o.checked=r==="true":o.indeterminate=!0;for(const t of document.querySelectorAll("#observablehq-sidebar summary")){const s=t.parentElement;switch(sessionStorage.getItem(`observablehq-sidebar:${t.textContent}`)){case"true":s.open=!0;break;case"false":s.classList.contains("observablehq-section-active")||(s.open=!1);break}}addEventListener("beforeunload",()=>sessionStorage.setItem("observablehq-sidebar-scrolly",`${e.scrollTop}`));const a=sessionStorage.getItem("observablehq-sidebar-scrolly");a!=null&&(e.style.cssText="overflow: hidden;",e.scrollTop=+a,e.style.cssText="");}</script>
+<div id="observablehq-center">
+<aside id="observablehq-toc" data-selector="h1:not(:first-of-type)[id], h2:first-child[id], :not(h1) + h2[id]">
+<nav>
+<div>Contents</div>
+<ol>
+<li class="observablehq-secondary-link"><a href="#comparacion-de-grupos-por-sexo">Comparación de grupos (por sexo)</a></li>
+<li class="observablehq-secondary-link"><a href="#contributors">Contributors</a></li>
+</ol>
+</nav>
+</aside>
+<main id="observablehq-main" class="observablehq">
+<h1 id="explorador-canguro" tabindex="-1"><a class="observablehq-header-anchor" href="#explorador-canguro">Explorador Canguro</a></h1>
+<p>Explorador nativo (Observable Framework) de trayectorias de peso de bebés prematuros
+del Programa Canguro. Usa la librería <strong>TimeWidget</strong> local con zoom por semanas y peso.</p>
+<blockquote>
+<p>Nota: abajo se comparan los grupos por <strong>sexo</strong> (los datos publicados son anónimos). La
+definición de grupos arbitrarios (G1/G2 estilo RCIU vía FacetedSearch) requiere incluir más
+atributos en el conjunto anonimizado — pendiente de revisión de privacidad.</p>
+</blockquote>
+<style>
+/* TimeWidget draws the authoritative (zoom-aware) tick axes. The zoomable axes
+   sit just OUTSIDE them as scented range sliders — full-extent zoom controls, not
+   the data axis — so hide their own ticks/domain and keep only scent + handles. */
+.zoomable-axis-input .za-axis .tick,
+.zoomable-axis-input .za-axis .domain { display: none; }
+.zoomable-axis-input { z-index: 5; }
+</style>
+<div class="observablehq observablehq--block"><!--:f8530f72:--></div>
+<div class="observablehq observablehq--block"><!--:ae44e100:--></div>
+<div class="observablehq observablehq--block"><!--:7107ab42:--></div>
+<div class="observablehq observablehq--block"><!--:f803839e:--></div>
+<div class="observablehq observablehq--block"><!--:57be92f9:--></div>
+<div class="observablehq observablehq--block"><!--:6af70935:--></div>
+<div class="observablehq observablehq--block"><!--:10cd46de:--></div>
+<div class="observablehq observablehq--block"><!--:b0b6d8bb:--></div>
+<div class="observablehq observablehq--block"><!--:332e281c:--></div>
+<div class="observablehq observablehq--block"><!--:4840195d:--></div>
+<div class="observablehq observablehq--block"><!--:28fc6faf:--></div>
+<h2 id="comparacion-de-grupos-por-sexo" tabindex="-1"><a class="observablehq-header-anchor" href="#comparacion-de-grupos-por-sexo">Comparación de grupos (por sexo)</a></h2>
+<p>Selecciona una ventana de tiempo con un brush en la gráfica; las tarjetas y la distribución de
+abajo se actualizan con los puntos seleccionados (acoplamiento directo).</p>
+<div class="observablehq observablehq--block"><!--:d4906732:--></div>
+<div class="observablehq observablehq--block"><!--:3a11892f:--></div>
+<div class="observablehq observablehq--block"><!--:c512b98f:--></div>
+<div class="observablehq observablehq--block"><!--:597aa45f:--></div>
+<div class="grid grid-cols-2">
+  <div class="card">
+    <h3>Tarjeta de estadísticas — <observablehq-loading></observablehq-loading><!--:b8b4e9ce:--></h3>
+    <observablehq-loading></observablehq-loading><!--:d1af7da4:-->
+  </div>
+  <div class="card">
+    <h3>Distribución — <observablehq-loading></observablehq-loading><!--:b8b4e9ce-1:--></h3>
+    <observablehq-loading></observablehq-loading><!--:61350017:-->
+  </div>
+</div>
+<h2 id="contributors" tabindex="-1"><a class="observablehq-header-anchor" href="#contributors">Contributors</a></h2>
+<p>These research tools are the result of a collaboration between Universidad Rey Juan Carlos
+in Madrid (Iván Velasco, Sofía Bayona and Luis Pastor), The Kangaroo Foundation in Colombia
+(Nathalie Charpak, José Tiberio Hernández), and Northeastern University in Silicon Valley
+(John Alexis Guerra Gómez).</p>
+</main>
+<footer id="observablehq-footer">
+<nav><a rel="next" href="./timewidget-demo"><span>TimeWidget (nativo)</span></a></nav>
+<div>Fundación Canguro · URJC · Northeastern University</div>
+</footer>
+</div>
+</body>
+</html>
